@@ -5,14 +5,16 @@ class XoGame:
     """
     Creates a XO game for two players, in any wanted board size (n>2)
     """
+
     def __init__(self, players, board_size):
         """
         :param players: A list with the player names.
         :param board_size: The length of the boards rows and columns.
         """
         self.players_symbols = ["X", "O"]
-        #Create a mapping between the player symbol and name
-        self.players = {symbol_and_player[0]: symbol_and_player[1] for symbol_and_player in list(zip(self.players_symbols, players))}
+        # Create a mapping between the player symbol and name
+        self.players = {symbol_and_player[0]: symbol_and_player[1] for symbol_and_player in
+                        list(zip(self.players_symbols, players))}
         self.board_size = board_size
         # I Use range so each row would create a different list in the memory
         self.board = [[" "] * board_size for row in range(self.board_size)]
@@ -22,14 +24,15 @@ class XoGame:
         while not self.has_game_ended():
             self.take_turn()
 
-
     def print_board(self):
         """
         Prints the current board of the game
         """
         first_line = '   ' + ' '.join([str(num) for num in range(self.board_size)]) + '\n'
-        board_lines = [str(line_index) + ' ' + '|' + '{}|'*self.board_size + '\n' for line_index in range(self.board_size)]
-        final_string = first_line + ('  ' + '-'*(3*self.board_size-(self.board_size-1)) + '\n').join(board_lines)
+        board_lines = [str(line_index) + ' ' + '|' + '{}|' * self.board_size + '\n' for line_index in
+                       range(self.board_size)]
+        final_string = first_line + ('  ' + '-' * (3 * self.board_size - (self.board_size - 1)) + '\n').join(
+            board_lines)
         print(final_string.format(*[slot for row in self.board for slot in row]))
 
     def take_turn(self):
@@ -103,7 +106,7 @@ class XoGame:
 def main():
     player1 = str(input('Please enter the name of player one >'))
     player2 = str(input('Please enter the name of player two >'))
-    players = [player1,player2]
+    players = [player1, player2]
     board_size = int(input('Please enter board size'))
     while board_size < 3:
         print('board size must be bigger than 3')
