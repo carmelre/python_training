@@ -1,4 +1,6 @@
 import random
+PLAYER1_SYMBOL = "X"
+PLAYER2_SYMBOL = "O"
 
 
 class XOGame:
@@ -8,7 +10,7 @@ class XOGame:
 
     def __init__(self, player1, player2, board_size):
         """
-        Initiates the class and prepares all the necessary data.
+        Initiates the XO game.
 
         :param player1: The name of the first player
         :param player2: The name of the second player
@@ -17,7 +19,7 @@ class XOGame:
         # Create a mapping between the player representation and name
         self.players = {0: player1, 1: player2}
         # Create mapping between player representation and printable symbol
-        self.symbols_mapping = {0: "X", 1: "O", None: " "}
+        self.symbols_mapping = {0: PLAYER1_SYMBOL, 1: PLAYER2_SYMBOL}
         self.board_size = board_size
         # Range is used so each row would create a different list in the memory
         self.board = [[None] * board_size for row in range(self.board_size)]
@@ -46,10 +48,16 @@ class XOGame:
         for row_number in range(self.board_size):
             # Create a line template in which printable values will be formatted.
             line_template = (str(row_number) + ' |' + '{}|' * self.board_size)
-            # Switch the values in a row to printable ones according to our mapping.
-            printable_values = [self.symbols_mapping[internal_value] for internal_value in self.board[row_number]]
-            # Format the template with the printable values created above.
+            # Create a list of printable values according to our mapping.
+            printable_values = []
+            for value in self.board[row_number]:
+                if value != None:
+                    printable_values.append(self.symbols_mapping[value])
+                else:
+                    printable_values.append(" ")
+            # Format the template with the printable values created above, and print the line.
             print(line_template.format(*printable_values))
+            # Print a separator line if we haven`t reached the last line.
             if row_number < self.board_size - 1:
                 print(separator_line)
 
@@ -78,10 +86,6 @@ class XOGame:
         if self.turns_counter < (self.board_size * 2 - 1):
             return False
 
-        if self.turns_counter == self.board_size ** 2:
-            print("The game has ended with a tie!")
-            return True
-
         if any([self._check_for_winning_sequence(row) for row in self.board]):
             return True
 
@@ -97,6 +101,13 @@ class XOGame:
         if self._check_for_winning_sequence(right_to_left_diagonal):
             return True
 
+        if self.turns_counter == self.board_size ** 2:
+            print("The game has ended with a tie!")
+            return True
+
+        else:
+            return False
+
     def _check_for_winning_sequence(self, sequence) -> bool:
         """
         Check if a specific sequence is comprised of a uniform symbol, and indicates a win.
@@ -106,6 +117,8 @@ class XOGame:
         if sequence.count(self.current_player) == self.board_size:
             print('The winner is {}'.format(self.players[self.current_player]))
             return True
+        else:
+            return False
 
     def _get_validated_slot_number_input(self):
         """
@@ -125,10 +138,8 @@ class XOGame:
             column_index = int(column_index)
             if row_index not in range(self.board_size) or column_index not in range(self.board_size):
                 print("Make sure the slot numbers you have entered are within the range of the board.")
-                continue
-            if self.board[row_index][column_index]:
+            elif self.board[row_index][column_index]:
                 print("That slot is already taken, choose again")
-                continue
             else:
                 is_slot_number_valid = True
 
@@ -137,9 +148,9 @@ class XOGame:
 
 def get_validated_board_size() -> int:
     """
-    Validate that the user gives a numeric board size that is bigger than 2.
+    Validates that the user has given a numeric board size that is bigger than 2.
 
-    :return: a board size after validation
+    :return: A board size after validation.
     """
     is_board_size_valid = False
     while not is_board_size_valid:
@@ -150,7 +161,6 @@ def get_validated_board_size() -> int:
         board_size_input = int(board_size_input)
         if board_size_input < 3:
             print('board size must be bigger than 3')
-            continue
         else:
             is_board_size_valid = True
 
