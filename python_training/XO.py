@@ -1,4 +1,5 @@
 import random
+
 PLAYER1_SYMBOL = "X"
 PLAYER2_SYMBOL = "O"
 
@@ -51,7 +52,7 @@ class XOGame:
             # Create a list of printable values according to our mapping.
             printable_values = []
             for value in self.board[row_number]:
-                if value != None:
+                if value is not None:
                     printable_values.append(self.symbols_mapping[value])
                 else:
                     printable_values.append(" ")
