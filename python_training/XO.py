@@ -107,8 +107,7 @@ class XOGame:
             print("The game has ended with a tie!")
             return True
 
-        else:
-            return False
+        return False
 
     def _check_for_winning_sequence(self, sequence) -> bool:
         """
@@ -119,8 +118,8 @@ class XOGame:
         if sequence.count(self.current_player) == self.board_size:
             print('The winner is {}'.format(self.players[self.current_player]))
             return True
-        else:
-            return False
+
+        return False
 
     def _get_validated_slot_number_input(self):
         """
