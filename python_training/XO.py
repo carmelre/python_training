@@ -25,7 +25,7 @@ class XOGame:
         # Range is used so each row would create a different list in the memory
         self.board = [[None] * board_size for row in range(self.board_size)]
         self.turns_counter = 0
-        self.current_player = random.choice(list(self.players.keys()))
+        self.current_player = random.choice([*self.players])
 
     def start_game(self):
         """
@@ -42,13 +42,11 @@ class XOGame:
         """
         # Prints the first line that looks like this (for n = 3):
         #   0 1 2
-        print('   ' + ' '.join([str(num) for num in range(self.board_size)]))
+        print('   {}'.format(' '.join([str(num) for num in range(self.board_size)])))
         # Creates a line that separates the board rows (calculated according to the number of slots)
         # Eventually the line would look like this -------------
-        separator_line = '  ' + '-' * (3 * self.board_size - (self.board_size - 1))
+        separator_line = '  {}'.format('-' * (3 * self.board_size - (self.board_size - 1)))
         for row_number in range(self.board_size):
-            # Create a line template in which printable values will be formatted.
-            line_template = (str(row_number) + ' |' + '{}|' * self.board_size)
             # Create a list of printable values according to our mapping.
             printable_values = []
             for value in self.board[row_number]:
@@ -56,8 +54,11 @@ class XOGame:
                     printable_values.append(self.symbols_mapping[value])
                 else:
                     printable_values.append(" ")
-            # Format the template with the printable values created above, and print the line.
-            print(line_template.format(*printable_values))
+            # Create a template string as this one (for n=3):
+            # 0 |{}|{}|{}|
+            # And format the printable values into it.
+            # 0 | | X|O|
+            print((str(row_number) + ' |' + '{}|' * self.board_size).format(*printable_values))
             # Print a separator line if we haven`t reached the last line.
             if row_number < self.board_size - 1:
                 print(separator_line)
