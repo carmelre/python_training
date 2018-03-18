@@ -26,8 +26,9 @@ class City:
     def __init__(self, city_name, *neighborhoods):
         """
         Initiates a new City object.
-        :param neighborhoods: A list of Neighborhood objects that represent the neighborhoods in the city.
+        :param neighborhoods: A list of Neighborhood objects that are part of the city.
         """
+        # Check that there are no neighborhoods with the same name (and will be overwritten)
         if len(set(neighborhood.name for neighborhood in neighborhoods)) != len(neighborhoods):
             print("You have entered one or more neighborhoods with the same name.")
         self.city_name = city_name
@@ -49,6 +50,7 @@ class City:
         """
         if neighborhood_name in self.neighborhoods:
             self.base_municipality_tax_rate *= 1.05
+            del(self.neighborhoods[neighborhood_name])
         else:
             print(f"The neighborhood {neighborhood_name} doesnt exist in {self.city_name}")
 
@@ -166,10 +168,12 @@ def main():
     benor_neighborhood1 = Neighborhood("Benor", 1, House(9, 2), House(11, 30), House(2, 2))
     benor_neighborhood2 = Neighborhood("Benor2", 1, House(2, 2))
     benor_city = City("benors_city", benor_neighborhood1, benor_neighborhood2)
-    print("Banor City tax rate", benor_city.how_much_money())
+    print("Benor City tax rate", benor_city.how_much_money())
     benor_city.build_a_house("Benor2", 1, 1)
     benor_city.build_a_park("Benor")
-    print("Banor City tax rate after adding a park and a house:", benor_city.how_much_money())
+    print("Benor City tax rate after adding a park and a house:", benor_city.how_much_money())
+    benor_city.ruin_a_neighborhood("Benor2")
+    print("Benor City tax rate after ruining a neighborhood:", benor_city.how_much_money())
     print("-------------")
     ackland = Ackland(shenkler_city, benor_city)
     print("Total tax in ackland:", ackland.calculate_total_tax_amount())
