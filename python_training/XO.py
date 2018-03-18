@@ -18,14 +18,14 @@ class XOGame:
         :param board_size: The length of the boards rows and columns.
         """
         # Create a mapping between the player representation and name
-        self.players = {0: player1, 1: player2}
+        self.players = [player1, player2]
         # Create mapping between player representation and printable symbol
-        self.symbols_mapping = {0: PLAYER1_SYMBOL, 1: PLAYER2_SYMBOL}
+        self.symbols_mapping = [PLAYER1_SYMBOL, PLAYER2_SYMBOL]
         self.board_size = board_size
         # Range is used so each row would create a different list in the memory
         self.board = [[None] * board_size for row in range(self.board_size)]
         self.turns_counter = 0
-        self.current_player = random.choice([*self.players])
+        self.current_player = random.choice([0, 1])
 
     def start_game(self):
         """
@@ -48,17 +48,13 @@ class XOGame:
         separator_line = '  {}'.format('-' * (3 * self.board_size - (self.board_size - 1)))
         for row_number in range(self.board_size):
             # Create a list of printable values according to our mapping.
-            printable_values = []
-            for value in self.board[row_number]:
-                if value is not None:
-                    printable_values.append(self.symbols_mapping[value])
-                else:
-                    printable_values.append(" ")
+            printable_values = [self.symbols_mapping[value] if value is not None else ' '
+                                for value in self.board[row_number]]
             # Create a template string as this one (for n=3):
             # 0 |{}|{}|{}|
             # And format the printable values into it.
-            # 0 | | X|O|
-            print((str(row_number) + ' |' + '{}|' * self.board_size).format(*printable_values))
+            # 0 | |X|O|
+            print(f'{row_number} |' + ('{}|' * self.board_size).format(*printable_values))
             # Print a separator line if we haven`t reached the last line.
             if row_number < self.board_size - 1:
                 print(separator_line)
@@ -70,11 +66,10 @@ class XOGame:
         - Receive a slot from the player and check if it available
         - Positions the players symbol on the board
         """""
-
         if self.turns_counter > 0:
             self.current_player = (self.current_player + 1) % 2
 
-        print('OK {}, Its your turn!'.format(self.players[self.current_player]))
+        print('OK {}, its your turn!'.format(self.players[self.current_player]))
 
         row_index, column_index = self._get_validated_slot_number_input()
         self.board[row_index][column_index] = self.current_player
@@ -139,7 +134,7 @@ class XOGame:
             column_index = int(column_index)
             if row_index not in range(self.board_size) or column_index not in range(self.board_size):
                 print("Make sure the slot numbers you have entered are within the range of the board.")
-            elif self.board[row_index][column_index]:
+            elif self.board[row_index][column_index] in [0, 1]:
                 print("That slot is already taken, choose again")
             else:
                 is_slot_number_valid = True
@@ -177,5 +172,5 @@ def main():
     game.start_game()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
