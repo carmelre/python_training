@@ -3,18 +3,20 @@ import sys
 import time
 
 
-class Tqdm():
+class Tqdm:
     """
     Initiates a class that wraps iterable objects, and presents information regarding the iteration progress.
     """
+
     def __init__(self, iterable):
         """
         Initiates the wrapper class.
+
         :param iterable: The iterable on which information will be provided during iteration.
         """
         self.iterable = iter(iterable)
-        self.max_iteration_number = len(iterable) - 1
-        self.number_of_iterations = 0
+        self.iterations_limit = len(iterable)
+        self.iteration_number = 1
         self.iteration_start_time = None
         self.iterations_per_second = 0
         # Clear_the_screen.
@@ -30,38 +32,37 @@ class Tqdm():
         Provides statistics regarding the iteration progress, and calls the next object of the iterator.
         :return: The next object of the iterator.
         """
-        if self.number_of_iterations == 0:
-            self.iteration_start_time = time.time()
+        if self.iteration_number == 1:
+            self.iteration_start_time = time.monotonic()
         self.print_iteration_status()
-        self.number_of_iterations += 1
+        self.iteration_number += 1
         return next(self.iterable)
 
     def print_iteration_status(self):
         """
         Print statistics regarding the iteration progress.
         """
-        if self.number_of_iterations <= self.max_iteration_number:
-            printable_iteration_num = self.number_of_iterations + 1
-            percent_completed = int(self.number_of_iterations/(self.max_iteration_number+1)*100)
-            if self.number_of_iterations != 0:
-                self.iterations_per_second = self.number_of_iterations / self.elapsed_time
+        if self.iteration_number <= self.iterations_limit:
+            percent_completed = int(self.iteration_number / (self.iterations_limit) * 100)
+            if self.iteration_number != 1:
+                self.iterations_per_second = self.iteration_number / self.elapsed_time
         else:
-            printable_iteration_num = self.max_iteration_number + 1
             percent_completed = 100
+            self.iteration_number = self.iterations_limit
         with self.write_first_line():
-            print(f"Iteration Number: {printable_iteration_num}/{self.max_iteration_number +1}",
+            print(f"Iteration Number: {self.iteration_number}/{self.iterations_limit}",
                   "Elapsed Time:{:7.4f}".format(self.elapsed_time),
                   "Iterations Per Second:{:7.4f}".format(self.iterations_per_second),
                   "Completed: {:>3s}%".format(str(percent_completed)),
-                  "[{:10s}]".format("#"*(percent_completed//10)))
+                  "[{:10s}]".format("#" * (percent_completed // 10)))
 
     @property
-    def elapsed_time(self):
+    def elapsed_time(self)->float:
         """
         Calculates the elapsed time starting from the first iteration.
-        :return:
+        :return: Time since the first iteration
         """
-        return time.time() - self.iteration_start_time
+        return time.monotonic() - self.iteration_start_time
 
     @staticmethod
     @contextmanager
@@ -84,5 +85,5 @@ def main():
         time.sleep(1)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
