@@ -40,7 +40,7 @@ class MyList:
 
     def __iter__(self):
         """
-        Creates and returns an Iterator object that allows iterating over the list members.
+        Initiates and returns an Iterator object that allows iterating over the list members.
 
         :return: A Iterator object.
         """
