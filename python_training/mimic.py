@@ -1,122 +1,186 @@
+import copy
+
 
 class MyList:
     """
-    Creates a series of objects that mimic a pythonic list.
-    Each object holds a value, and a pointer to the next item of the list.
-    The user accesss the list through the first item.
-    The first initiation of the class (by the user) creates an empty list, and items are added by calling the append
-    method.
+    A container object that emulates the behaviour of a pythonic list.
+    Each member in the list would be a ListMember object.
+    The MyList object holds a direct pointer to the first and last member in the list, and
+    each ListMember holds a direct pointer to the proceeding ListMember object.
     """
-    def __init__(self, index=0, value=None):
+    def __init__(self):
         """
-        Creates a list member that holds a specific value of the list, and points to the next value.
-        At first self.next_value is empty, until the append method is called.
-        :param index: The index of the item in the series
-        :param value: The value in the series that the specific MyList object represents.
+        Initiates a MyList object.
         """
-        self.value = value
-        self.next_value = None
-        self.index = index
+        self.first_member = None
+        self.last_member = None
+        self.list_length = 0
 
-    def append(self, appended_value):
+    def append(self, value):
         """
-        Appends a value to the series. If empty, the value of the current object would be set.
-        Otherwise, the method would be called upon the next object.
-        :param appended_value: The value that would be added to the series.
+        Creates a new ListMember and adds it to the list.
+
+        :param value: The value that would be held in the ListMember.
         """
-        if self.value is None:
-            self.value = appended_value
-        elif self.next_value is None:
-            self.next_value = (MyList(self.index + 1, appended_value))
+        if self.first_member is None:
+            self.first_member = ListMember(value)
+            self.last_member = self.first_member
         else:
-            self.next_value.append(appended_value)
+            self.last_member.next_member = ListMember(value)
+            self.last_member = self.last_member.next_member
+        self.list_length += 1
 
     def __len__(self)-> int:
         """
-        Calculates the number of objects in the series.
-        :return: The number of objects in the series.
-        """
-        return self._get_last_index() + 1
+        Returns the length of the list.
 
-    def _get_last_index(self)->int:
+        :return: The length of the list.
         """
-        Finds out what is the index of the last object in the series.
-        :return: The index of the last object.
+        return self.list_length
+
+    def __iter__(self):
         """
-        if self.next_value is None:
-            last_index = self.index
-        else:
-            last_index = self.next_value._get_last_index()
-        return last_index
+        Creates and returns an Iterator object that allows iterating over the list members.
+
+        :return: A Iterator object.
+        """
+        return ListIterator(self)
 
     def remove(self, value_to_remove):
         """
-        Remove a value from the series.
-        :param value_to_remove: The value that will be removed from the series.
-        """
-        if self.value == value_to_remove:
-            # Erase the value of a single item series.
-            if self.next_value is None:
-                self.value = None
-                return
-            # We remove the value from the series by copying the values of the next item, and pointing to the one after.
-            # Afterwards we reduce by 1 all the indexes of the next items in the series.
-            else:
-                self.value = self.next_value.value
-                self.next_value = self.next_value.next_value
-                self._reduce_index_of_next_items()
-                return
+        Removes the first ListMember that holds the given value.
 
-        if self.next_value is not None:
-            # In this block we cover the situation in which the value that should be removed is the last.
-            if self.next_value.value == value_to_remove and self.next_value.next_value is None:
-                self.next_value = None
-                return
-            # If the current class doesnt contain the wanted value, proceed to the next one.
-            else:
-                self.next_value.remove(value_to_remove)
-        # Raise a value error if we have reached the last object in the series, and it doesnt contain the wanted value.
-        if self.index == self._get_last_index():
+        :param value_to_remove: A value that would be removed from the list.
+        """
+        if self.list_length == 0:
             raise ValueError('MyList.remove(x): x not in list')
+        for member in self:
+            if member is self.first_member and member.value == value_to_remove:
+                if self.list_length == 1:
+                    self.first_member = None
+                    self.last_member = None
+                else:
+                    self.first_member = self.first_member.next_member
+                self.list_length -= 1
+                break
 
-    def _reduce_index_of_next_items(self):
-        """
-        Reduces the indices of the next objects by one.
-        """
-        if self.next_value is not None:
-            self.next_value.index -= 1
-            self.next_value._reduce_index_of_next_items()
+            if member.next_member.value == value_to_remove:
+                if member.next_member is self.last_member:
+                    self.last_member = member
+                    member.next_member = None
+                    self.list_length -= 1
+                    break
+                else:
+                    member.next_member = member.next_member.next_member
+                    self.list_length -= 1
+                    break
+            if member == self.last_member:
+                raise ValueError('MyList.remove(x): x not in list')
 
-    def __str__(self):
+    def __str__(self)-> str:
         """
-        Returns a string that represents the series.
-        :return: A string that mimics the string representation of a pythonic list: [ item1, item2, item3...].
-        """
-        return "[{}]".format(self._get_str_value_of_next_items())
+        Returns a textual representation of the list.
 
-    def _get_str_value_of_next_items(self)->str:
+        :return: A string representing the list.
         """
-        Returns a string that combines all the items of the series, separated by comas.
-        "item1,item2,tem3..."
-        :return: The concatenated string.
-        """
-        if self.value is None:
-            return ""
-        else:
-            if self.next_value is not None:
-                return f"{self.value}, {self.next_value._get_str_value_of_next_items()}"
-            else:
-                return self.value
+        base_string = '[ '
+        for member in self:
+            base_string += '{}, '.format(member.value) if member is not self.last_member else '{}'.format(member.value)
+        base_string += ' ]'
+        return base_string
 
     def __add__(self, other):
         """
-        Concatenates two MyList series.
-        :param other: The series that would be added to the current MyList series.
+        Adds one MyList object to another and returns a new MyList object comprised of the two.
+        :param other: The second MyList object we want to add to the current one.
+        :return: A new MyList object containing the values of both the lists.
         """
         if type(other) is not type(self):
             raise TypeError("Can only concatenate MyList  object to another MyList object")
+        copy_of_first_list = copy.deepcopy(self)
+        copy_of_second_list = copy.deepcopy(other)
+        copy_of_first_list.last_member.next_member = copy_of_second_list.first_member
+        copy_of_first_list.last_member = copy_of_second_list.last_member
+        return copy_of_first_list
+
+    def __getitem__(self, key):
+        """
+        Allows accessing MyList members via []
+        :param key: The position of the member that should be returned.
+        :return: The ListMember that matches the given position.
+        """
+        if type(key) is not int:
+            raise TypeError
+        if key < 0 or key > self.list_length - 1:
+            raise KeyError
         else:
-            if self.next_value is None:
-                self.next_value = other
-            else:
-                self.next_value.__add__(other)
+            for index, member in enumerate(self):
+                if index == key:
+                    return member.value
+
+
+class ListIterator:
+    """
+    A Iterator for MyList objects.
+    """
+    def __init__(self, list_object):
+        """
+        Initiates the ListIterator.
+        :param list_object:
+        """
+        self.list = list_object
+        self.current_iteration_object = None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        """
+        Gets the next object in the list.
+        :return: The next object in the list.
+        """
+        if self.current_iteration_object is None:
+            self.current_iteration_object = self.list.first_member
+        else:
+            self.current_iteration_object = self.current_iteration_object.next_member
+
+        if self.current_iteration_object is not None:
+            return self.current_iteration_object
+        else:
+            raise StopIteration
+
+
+class ListMember:
+    """
+    A member of a MyList series.
+    """
+    def __init__(self, value):
+        """
+        Initiates the ListMember and sets the value it holds.
+        :param value: The vale that should be held in the member.
+        """
+        self.value = value
+        self.next_member = None
+
+
+def main():
+    my_list = MyList()
+    my_list.append(1)
+    my_list.append(2)
+    my_list.append(3)
+    print(my_list)
+    my_list.remove(3)
+    print(my_list)
+    my_list2 = MyList()
+    my_list2.append(3)
+    my_list2.append(4)
+    my_list2.append(5)
+    print(my_list2)
+    my_list2.remove(3)
+    print(my_list2)
+    print(my_list + my_list2)
+    print(my_list2[0])
+
+
+if __name__ == '__main__':
+    main()
