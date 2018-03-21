@@ -31,11 +31,6 @@ class MyList:
         self.list_length += 1
 
     def __len__(self)-> int:
-        """
-        Returns the length of the list.
-
-        :return: The length of the list.
-        """
         return self.list_length
 
     def __iter__(self):
@@ -68,12 +63,11 @@ class MyList:
                 if member.next_member is self.last_member:
                     self.last_member = member
                     member.next_member = None
-                    self.list_length -= 1
-                    break
+
                 else:
                     member.next_member = member.next_member.next_member
-                    self.list_length -= 1
-                    break
+                self.list_length -= 1
+                break
             if member == self.last_member:
                 raise ValueError('MyList.remove(x): x not in list')
 
@@ -83,19 +77,20 @@ class MyList:
 
         :return: A string representing the list.
         """
-        base_string = '[ '
+        base_string = '['
         for member in self:
-            base_string += '{}, '.format(member.value) if member is not self.last_member else '{}'.format(member.value)
-        base_string += ' ]'
+            base_string += ' {},'.format(member.value) if member is not self.last_member \
+                else ' {} ]'.format(member.value)
         return base_string
 
     def __add__(self, other):
         """
         Adds one MyList object to another and returns a new MyList object comprised of the two.
+
         :param other: The second MyList object we want to add to the current one.
         :return: A new MyList object containing the values of both the lists.
         """
-        if type(other) is not type(self):
+        if type(other) is not MyList:
             raise TypeError("Can only concatenate MyList  object to another MyList object")
         copy_of_first_list = copy.deepcopy(self)
         copy_of_second_list = copy.deepcopy(other)
@@ -104,15 +99,10 @@ class MyList:
         return copy_of_first_list
 
     def __getitem__(self, key):
-        """
-        Allows accessing MyList members via []
-        :param key: The position of the member that should be returned.
-        :return: The ListMember that matches the given position.
-        """
         if type(key) is not int:
-            raise TypeError
+            raise TypeError("Keys must be integers")
         if key < 0 or key > self.list_length - 1:
-            raise KeyError
+            raise KeyError("Key out of range")
         else:
             for index, member in enumerate(self):
                 if index == key:
@@ -135,10 +125,6 @@ class ListIterator:
         return self
 
     def __next__(self):
-        """
-        Gets the next object in the list.
-        :return: The next object in the list.
-        """
         if self.current_iteration_object is None:
             self.current_iteration_object = self.list.first_member
         else:
@@ -165,20 +151,25 @@ class ListMember:
 
 def main():
     my_list = MyList()
+    print("Empty List")
+    print(my_list)
     my_list.append(1)
     my_list.append(2)
     my_list.append(3)
+    print("List with 3 elements")
     print(my_list)
     my_list.remove(3)
+    print("Removed 3")
     print(my_list)
     my_list2 = MyList()
     my_list2.append(3)
     my_list2.append(4)
     my_list2.append(5)
+    print("A second List")
     print(my_list2)
-    my_list2.remove(3)
-    print(my_list2)
+    print("Add the second list to the first list")
     print(my_list + my_list2)
+    print("my_list[2]")
     print(my_list2[0])
 
 
