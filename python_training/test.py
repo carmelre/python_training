@@ -10,4 +10,4 @@ def test_session(scope='session'):
 
 
 def test_first_user_exist():
-    assert test_session.query(Member).first()
+    assert test_session().query(Member).first()

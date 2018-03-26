@@ -1,10 +1,5 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import sessionmaker
-from python_training.config import DB_PATH
-
-Base = declarative_base()
+from python_training.base import Base
 
 
 class Member(Base):
@@ -22,18 +17,15 @@ class Member(Base):
                f' Role: {self.role}, Location: {self.location}'
 
 
-def main():
+def add_member(session, first_name, last_name, role, location):
+    """
+    Creates a new Member and adds it to the DB.
 
-    engine = create_engine(DB_PATH, echo=True)
-    #Base.metadata.create_all(engine)
-    #carmel = Member(first_name='Carmel', last_name='Reubinoff', role='dev', location='Team8')
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    #session.add(carmel)
-    #session.commit()
-    print(session.query(Member).all()[0].id)
-
-
-if __name__ == '__main__':
-    main()
+    :param session: The session that would bw used to establish a connection to the db.
+    :param first_name: The first name of the Member.
+    :param last_name: The last name of the Member.
+    :param role: The role of the Member.
+    :param location: The location of the Member.
+    """
+    session.add(Member(first_name=first_name, last_name=last_name, role=role, location=location))
+    session.commit()
