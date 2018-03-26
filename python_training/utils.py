@@ -7,7 +7,7 @@ from python_training.base import Base
 def get_engine_and_session():
     """
     This function instantiates a SQLAlchemy engine and session, and returns them.
-    
+
     :return: engine, session
     """
     engine = create_engine(DB_PATH, echo=True)

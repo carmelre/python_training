@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 from python_training.base import Base
-
+from python_training.organization import Organization
 
 class Member(Base):
 
@@ -11,6 +12,9 @@ class Member(Base):
     last_name = Column(String(30))
     role = Column(String(256))
     location = Column(String(256))
+    organization_id = Column(Integer, ForeignKey(Organization.id))
+
+    organization = relationship(Organization)
 
     def __repr__(self):
         return f'First Name: {self.first_name}, Last Name: {self.last_name},' \
@@ -27,5 +31,7 @@ def add_member(session, first_name, last_name, role, location):
     :param role: The role of the Member.
     :param location: The location of the Member.
     """
-    session.add(Member(first_name=first_name, last_name=last_name, role=role, location=location))
+    new_member = Member(first_name=first_name, last_name=last_name, role=role, location=location)
+    session.add(new_member)
     session.commit()
+    return new_member
