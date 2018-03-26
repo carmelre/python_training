@@ -10,7 +10,7 @@ class Ackland:
         """
         Initiates the Ackland state object.
         """
-        if type(cities) is not list:
+        if type(cities) is City:
             cities = [cities]
         self.cities = cities
 
@@ -32,7 +32,7 @@ class City:
         """
         Initiates a new City object.
 
-        :param neighborhoods: A list of Neighborhood objects that are part of the city.
+        :param city_name: The name of the city you would like to create.
         """
         self.city_name = city_name
         self.base_municipality_tax_rate = BASE_MUNICIPALITY_TAX_RATE
