@@ -11,7 +11,7 @@ class Organization(Base):
     name = Column(String(30))
     prime_location = Column(String(256))
 
-    members = relationship('Member')
+    members = relationship('Member', back_populates='organization')
 
     def __repr__(self):
         return f'Name: {self.name}, Prime Location: {self.prime_location}'

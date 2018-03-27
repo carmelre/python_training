@@ -2,9 +2,10 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from python_training.base import Base
 from python_training.organization import Organization
+from python_training.event__member_enrollment import event_enrollment_association_table
+
 
 class Member(Base):
-
     __tablename__ = 'members'
 
     id = Column(Integer, primary_key=True)
@@ -14,7 +15,9 @@ class Member(Base):
     location = Column(String(256))
     organization_id = Column(Integer, ForeignKey(Organization.id))
 
-    organization = relationship(Organization)
+    organization = relationship('Organization', back_populates='members')
+    events = relationship('Event', secondary=event_enrollment_association_table,
+                          back_populates='members')
 
     def __repr__(self):
         return f'First Name: {self.first_name}, Last Name: {self.last_name},' \

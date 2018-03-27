@@ -1,3 +1,3 @@
 
-DB_PATH = 'sqlite:///midas_db'
-
+OPERATIONAL_DB = 'sqlite:///midas.db'
+TEST_DB = 'sqlite:///midas_test.db'
