@@ -1,51 +1,43 @@
 import pytest
-from datetime import datetime
 from python_training.member import add_member, Member
 from python_training.event import add_event, Event
 from python_training.organization import add_organization, Organization
 from python_training.utils import get_engine_and_session
-from python_training.config import TEST_DB
+from python_training.config import TEST_DB, MEMBERS_INFO, ORGANIZATIONS_INFO, EVENTS_INFO
 from python_training.utils import create_tables
 
 create_tables(db_path=TEST_DB)
 
-members_info = [{'first_name': 'carmel', 'last_name': 'reubinoff', 'role': 'dev', 'location': 'Tozeret Haaretz'},
-                {'first_name': 'Anya', 'last_name': 'tch', 'role': 'dev', 'location': 'Tozeret Haaretz'},
-                {'first_name': 'Alon', 'last_name': 'Shenkler', 'role': 'dev', 'location': 'Tozeret Haaretz'}]
-organizations_info = [{'name': 'Sygnia', 'prime_location': 'Tozeret Haaretz'},
-                      {'name': 'Claroty', 'prime_location': 'Tozeret Haaretz'}]
-events_info = [{'date': datetime.now(), 'location': 'Mizpe Hayamim'},
-               {'date': datetime.now(), 'location': 'Zappa Herzliya'}]
 
 
 @pytest.fixture()
 def member1():
-    return Member(**members_info[0])
+    return Member(**MEMBERS_INFO[0])
 
 
 @pytest.fixture()
 def member2():
-    return Member(**members_info[1])
+    return Member(**MEMBERS_INFO[1])
 
 
 @pytest.fixture()
 def member3():
-    return Member(**members_info[2])
+    return Member(**MEMBERS_INFO[2])
 
 
 @pytest.fixture()
 def event1():
-    return Event(**events_info[0])
+    return Event(**EVENTS_INFO[0])
 
 
 @pytest.fixture()
 def event2():
-    return Event(**events_info[1])
+    return Event(**EVENTS_INFO[1])
 
 
 @pytest.fixture()
 def organization1():
-    return Organization(**organizations_info[0])
+    return Organization(**ORGANIZATIONS_INFO[0])
 
 
 @pytest.fixture()
@@ -57,9 +49,9 @@ def session():
 
 
 @pytest.mark.parametrize('add_func, kwargs',
-                         [(add_member, members_info[0]),
-                          (add_organization, organizations_info[0]),
-                          (add_event, events_info[0])])
+                         [(add_member, MEMBERS_INFO[0]),
+                          (add_organization, ORGANIZATIONS_INFO[0]),
+                          (add_event, EVENTS_INFO[0])])
 def test_add_objects(add_func, kwargs, session):
     new_object = add_func(session, **kwargs)
     object_type = type(new_object)
