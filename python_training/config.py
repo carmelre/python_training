@@ -10,4 +10,3 @@ ORGANIZATIONS_INFO = [{'name': 'Sygnia', 'prime_location': 'Tozeret Haaretz'},
                       {'name': 'Claroty', 'prime_location': 'Tozeret Haaretz'}]
 EVENTS_INFO = [{'date': datetime.now(), 'location': 'Mizpe Hayamim'},
                {'date': datetime.now(), 'location': 'Zappa Herzliya'}]
-

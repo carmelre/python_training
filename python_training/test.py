@@ -9,7 +9,6 @@ from python_training.utils import create_tables
 create_tables(db_path=TEST_DB)
 
 
-
 @pytest.fixture()
 def member1():
     return Member(**MEMBERS_INFO[0])

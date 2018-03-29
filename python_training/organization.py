@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from python_training.base import Base
+from python_training.basic_table import BasicTable
 
 
-class Organization(Base):
-
+class Organization(Base, BasicTable):
     __tablename__ = 'organizations'
 
     id = Column(Integer, primary_key=True)
@@ -17,7 +17,7 @@ class Organization(Base):
         return f'Name: {self.name}, Prime Location: {self.prime_location}'
 
 
-def add_organization(session, name, prime_location)-> Organization:
+def add_organization(session, name, prime_location) -> Organization:
     """
     Creates a new Organization and adds it to the DB.
 

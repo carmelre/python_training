@@ -3,9 +3,10 @@ from sqlalchemy.orm import relationship
 from python_training.base import Base
 from python_training.organization import Organization
 from python_training.event__member_enrollment import event_enrollment_association_table
+from python_training.basic_table import BasicTable
 
 
-class Member(Base):
+class Member(Base, BasicTable):
     __tablename__ = 'members'
 
     id = Column(Integer, primary_key=True)

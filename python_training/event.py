@@ -2,15 +2,16 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from python_training.base import Base
 from python_training.event__member_enrollment import event_enrollment_association_table
+from python_training.basic_table import BasicTable
 
 
-class Event(Base):
+class Event(Base, BasicTable):
     __tablename__ = 'events'
 
     id = Column(Integer, primary_key=True)
     date = Column(DateTime)
     location = Column(String(256))
-    members = relationship('Member', secondary= event_enrollment_association_table,
+    members = relationship('Member', secondary=event_enrollment_association_table,
                            back_populates='events')
 
     def __repr__(self):
