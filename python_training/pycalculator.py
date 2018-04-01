@@ -1,9 +1,8 @@
 def check_input(original_func):
     def wrapper(*args):
-        if any([True for arg in args[1:] if not (type(arg) is int or type(arg) is float)]):
+        if any([True for arg in args[1:] if not isinstance(arg, (int, float))]):
             raise TypeError("The given parameters are not all integers")
-        else:
-            return original_func(*args)
+        return original_func(*args)
     return wrapper
 
 
