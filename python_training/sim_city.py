@@ -110,7 +110,7 @@ class neighbourhood:
     A neighbourhood in Ackland (part of a City).
     """
 
-    def __init__(self, name, number_of_parks=0, *houses):
+    def __init__(self, name, houses=[], number_of_parks=0):
         """
         Initiates a new neighbourhood object.
 
@@ -119,8 +119,11 @@ class neighbourhood:
         :param houses: The number of houses in the neighbourhood.
         """
         self.name = name
+        if isinstance(houses, House):
+            houses = [houses]
+        self.houses = houses
         self.number_of_parks = number_of_parks
-        self.houses = list(houses)
+
 
     def get_neighbourhood_tax_rate(self) -> int:
         """
