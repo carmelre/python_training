@@ -2,29 +2,22 @@ from python_training.utils import get_engine_and_session
 from python_training.config import OPERATIONAL_DB
 
 
-class BasicTable:
-    @classmethod
-    def get(cls) -> QueryModifier:
-        """
-        Creates a QueryModifier that holds a plain query upon the table (seletc *).
-        :return: A new QueryModifier instance.
-        """
-        return QueryModifier(cls)
-
-
 class QueryModifier:
     """
     An object that holds and allows modification of an SQLAlchemy query.
     """
 
-    def __init__(self, table_object):
+    def __init__(self, table_object=None, query=None):
         """
         Instantiates the object with a basic query upon the database.
 
         :param table_object: The table that the query will be executed upon.
         """
         session = get_engine_and_session(OPERATIONAL_DB)[1]
-        self.query = session.query(table_object)
+        if query is not None and table_object is None:
+            self.query = query
+        else:
+            self.query = session.query(table_object)
 
     def refine(self, condition):
         """
@@ -37,7 +30,7 @@ class QueryModifier:
         :param condition: An SQLalchemy condition that would be applied to the query.
         :return: A new instance of QueryModifier.
         """
-        return QueryModifier(self.query.filter(condition))
+        return QueryModifier(query=self.query.filter(condition))
 
     def run(self):
         """
@@ -49,3 +42,13 @@ class QueryModifier:
 
     def __len__(self):
         return self.query.count()
+
+
+class BasicTable:
+    @classmethod
+    def get(cls) -> QueryModifier:
+        """
+        Creates a QueryModifier that holds a plain query upon the table (seletc *).
+        :return: A new QueryModifier instance.
+        """
+        return QueryModifier(table_object=cls)

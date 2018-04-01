@@ -80,3 +80,14 @@ def test_add_members_to_events(session, member1, member2, member3, event1, event
     session.commit()
     assert {event1, event2}.issubset(set(member2.events))
     assert set(event1.members).issubset({member1, member2})
+
+
+# @pytest.mark.parametrize('table_object, instance',
+#                          [(Member, member1),
+#                           (Event, event1),
+#                           (Organization, organization1)])
+# def test_refine_func(table_object, instance, session):
+#     assert table_object.get().refine(table_object.id == instance.id).run() == session.query(table_object).filter(table_object.id == instance.id)
+
+def test_refine_func(session, member1):
+     assert Member.get().refine(Member.id == member1.id).run() == session.query(Member).filter(Member.id == member1.id)
