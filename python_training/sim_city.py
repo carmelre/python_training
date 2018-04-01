@@ -66,7 +66,7 @@ class City:
         """
         self._verify_neighbourhood(neighbourhood_name, should_exist=False)
         self.base_municipality_tax_rate *= 1.1
-        self.neighbourhoods[neighbourhood_name] = neighbourhood(neighbourhood_name)
+        self.neighbourhoods[neighbourhood_name] = Neighbourhood(neighbourhood_name, [])
         return self.neighbourhoods[neighbourhood_name]
 
     def build_a_house(self, neighbourhood_name, number_of_family_members, size_of_house):
@@ -105,12 +105,12 @@ class City:
             raise KeyError(f'The neighbourhood {neighbourhood_name} already exist in {self.city_name}')
 
 
-class neighbourhood:
+class Neighbourhood:
     """
     A neighbourhood in Ackland (part of a City).
     """
 
-    def __init__(self, name, houses=[], number_of_parks=0):
+    def __init__(self, name, houses=None, number_of_parks=0):
         """
         Initiates a new neighbourhood object.
 
@@ -123,7 +123,6 @@ class neighbourhood:
             houses = [houses]
         self.houses = houses
         self.number_of_parks = number_of_parks
-
 
     def get_neighbourhood_tax_rate(self) -> int:
         """
