@@ -1,4 +1,4 @@
-from python_training.utils import get_engine_and_session
+from python_training.utils import get_connection
 from python_training.config import OPERATIONAL_DB
 
 
@@ -7,17 +7,23 @@ class QueryModifier:
     An object that holds and allows modification of an SQLAlchemy query.
     """
 
-    def __init__(self, table_object=None, query=None):
+    def __init__(self, session=None, table_object=None, query=None):
         """
         Instantiates the object with a basic query upon the database.
 
+        :param session: A session to be used.
         :param table_object: The table that the query will be executed upon.
         """
-        session = get_engine_and_session(OPERATIONAL_DB)[1]
-        if query is not None and table_object is None:
-            self.query = query
+        if session is None:
+            self.session = get_connection(OPERATIONAL_DB, get_session=True)
         else:
-            self.query = session.query(table_object)
+            self.session = session
+        if query is not None:
+            self.query = query
+        elif table_object is not None:
+            self.query = self.session.query(table_object)
+        else:
+            raise ValueError('No table has been provided')
 
     def refine(self, condition):
         """
@@ -30,7 +36,7 @@ class QueryModifier:
         :param condition: An SQLalchemy condition that would be applied to the query.
         :return: A new instance of QueryModifier.
         """
-        return QueryModifier(query=self.query.filter(condition))
+        return QueryModifier(session=self.session, query=self.query.filter(condition))
 
     def run(self):
         """
@@ -46,9 +52,9 @@ class QueryModifier:
 
 class BasicTable:
     @classmethod
-    def get(cls) -> QueryModifier:
+    def get(cls, session=None) -> QueryModifier:
         """
         Creates a QueryModifier that holds a plain query upon the table (seletc *).
         :return: A new QueryModifier instance.
         """
-        return QueryModifier(table_object=cls)
+        return QueryModifier(session, table_object=cls)

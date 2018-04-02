@@ -2,7 +2,7 @@ import pytest
 from python_training.member import add_member, Member
 from python_training.event import add_event, Event
 from python_training.organization import add_organization, Organization
-from python_training.utils import get_engine_and_session
+from python_training.utils import get_connection
 from python_training.config import TEST_DB, MEMBERS_INFO, ORGANIZATIONS_INFO, EVENTS_INFO
 from python_training.utils import create_tables
 
@@ -41,7 +41,7 @@ def organization1():
 
 @pytest.fixture()
 def session():
-    test_session = get_engine_and_session(TEST_DB)[1]
+    test_session = get_connection(TEST_DB, get_session=True)
     yield test_session
     test_session.rollback()
     test_session.commit()
@@ -82,12 +82,15 @@ def test_add_members_to_events(session, member1, member2, member3, event1, event
     assert set(event1.members).issubset({member1, member2})
 
 
-# @pytest.mark.parametrize('table_object, instance',
-#                          [(Member, member1),
-#                           (Event, event1),
-#                           (Organization, organization1)])
-# def test_refine_func(table_object, instance, session):
-#     assert table_object.get().refine(table_object.id == instance.id).run() == session.query(table_object).filter(table_object.id == instance.id)
-
-def test_refine_func(session, member1):
-     assert Member.get().refine(Member.id == member1.id).run() == session.query(Member).filter(Member.id == member1.id)
+@pytest.mark.parametrize('table_object, instance',
+                         [(Member, member1()),
+                          (Event, event1()),
+                          (Organization, organization1())])
+def test_refine_func(table_object, instance, session):
+    session.add(instance)
+    session.commit()
+    regular_query = session.query(table_object).filter(table_object.id == 1).all()
+    get_query = table_object.get().refine(table_object.id == 1).run()
+    assert len(get_query) == len(regular_query) == 1
+    assert get_query[0].id == regular_query[0].id
+    assert isinstance((get_query[0]), table_object) and isinstance((regular_query[0]), table_object)
