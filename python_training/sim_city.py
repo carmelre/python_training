@@ -1,26 +1,30 @@
+from typing import Union, List, Optional
+
 BASE_MUNICIPALITY_TAX_RATE = 1000
 
 
-class Ackland:
-    """
-    The state Ackland itself.
-    """
+def neighbourhood_verifier(should_exist):
+    def neighbourhood_verifier_decorator(func):
+        def wrapper(self, neighbourhood_name, *args, **kwargs):
+            if should_exist:
+                if neighbourhood_name not in self.neighbourhoods:
+                    raise KeyError(f'The neighbourhood {neighbourhood_name} doesnt exist in {self.city_name}')
+            else:
+                if neighbourhood_name in self.neighbourhoods:
+                    raise KeyError(f'The neighbourhood {neighbourhood_name} already exist in {self.city_name}')
+            return func(self, neighbourhood_name, *args, **kwargs)
+        return wrapper
+    return neighbourhood_verifier_decorator
 
-    def __init__(self, cities):
-        """
-        Initiates the Ackland state object.
-        """
-        if isinstance(cities, City):
-            cities = [cities]
-        self.cities = cities
 
-    def calculate_total_tax_amount(self) -> int:
-        """
-        Calculates the amount of tax money that would be earned from all the cities of Ackland.
-
-        :return: The total amount of tax money from all the cities of the state.
-        """
-        return sum([city.how_much_money() for city in self.cities])
+def type_verifier(*types):
+    def decor(func):
+        def wrapper(self, *args):
+            if any([True for arg in zip(args, types) if not isinstance(arg[0], arg[1])]):
+                raise TypeError('An argument of an invalid type has been passed')
+            return func(self, *args)
+        return wrapper
+    return decor
 
 
 class City:
@@ -28,7 +32,8 @@ class City:
     A city in Ackland.
     """
 
-    def __init__(self, city_name):
+    @type_verifier(str)
+    def __init__(self, city_name: str):
         """
         Initiates a new City object.
 
@@ -47,16 +52,17 @@ class City:
         return self.base_municipality_tax_rate + sum([neighbourhood.get_neighbourhood_tax_rate() for neighbourhood
                                                       in self.neighbourhoods.values()])
 
+    @neighbourhood_verifier(should_exist=True)
     def ruin_a_neighbourhood(self, neighbourhood_name):
         """
         Removes a neighbourhood from the city.
 
         :param neighbourhood_name: The name of the neighbourhood that would be removed.
         """
-        self._verify_neighbourhood(neighbourhood_name)
         self.base_municipality_tax_rate *= 1.05
         self.neighbourhoods.pop(neighbourhood_name)
 
+    @neighbourhood_verifier(should_exist=False)
     def build_a_neighbourhood(self, neighbourhood_name):
         """
         Adds a neighbourhood to the city.
@@ -64,11 +70,11 @@ class City:
         :param neighbourhood_name: The name of the neighbourhood.
         :return A neighbourhood object if succeeded, None otherwise.
         """
-        self._verify_neighbourhood(neighbourhood_name, should_exist=False)
         self.base_municipality_tax_rate *= 1.1
         self.neighbourhoods[neighbourhood_name] = Neighbourhood(neighbourhood_name, [])
         return self.neighbourhoods[neighbourhood_name]
 
+    @neighbourhood_verifier(should_exist=True)
     def build_a_house(self, neighbourhood_name, number_of_family_members, size_of_house):
         """
         Adds a house to a neighbourhood.
@@ -77,32 +83,63 @@ class City:
         :param number_of_family_members: The number of family members in the house.
         :param size_of_house: The size of the house.
         """
-        self._verify_neighbourhood(neighbourhood_name)
         self.neighbourhoods[neighbourhood_name].add_house(number_of_family_members, size_of_house)
 
+    @neighbourhood_verifier(should_exist=True)
     def build_a_park(self, neighbourhood_name):
         """
         Adds a park to a neighbourhood.
 
         :param neighbourhood_name: The name of the neighbourhood to which the park would be added.
         """
-        self._verify_neighbourhood(neighbourhood_name)
         self.neighbourhoods[neighbourhood_name].add_park()
 
-    def _verify_neighbourhood(self, neighbourhood_name, should_exist=True):
+
+class Ackland:
+    """
+    The state Ackland itself.
+    """
+
+    def __init__(self, cities: Union[City, List[City]]):
         """
-        Verifies that the neigborhood exists if should_exist= True, verifies that it doesnt exist otherwise.
-        :param should_exist:
-        :param neighbourhood_name: The neighbourhood name that would be verified.
+        Initiates the Ackland state object.
         """
-        if should_exist:
-            if neighbourhood_name in self.neighbourhoods:
-                return
-            raise KeyError(f'The neighbourhood {neighbourhood_name} doesnt exist in {self.city_name}')
-        else:
-            if neighbourhood_name not in self.neighbourhoods:
-                return
-            raise KeyError(f'The neighbourhood {neighbourhood_name} already exist in {self.city_name}')
+        if isinstance(cities, City):
+            cities = [cities]
+        self.cities = cities
+
+    def calculate_total_tax_amount(self) -> int:
+        """
+        Calculates the amount of tax money that would be earned from all the cities of Ackland.
+
+        :return: The total amount of tax money from all the cities of the state.
+        """
+        return sum([city.how_much_money() for city in self.cities])
+
+
+class House:
+    """
+    A house in Ackland (part of a neighbourhood).
+    """
+
+    @type_verifier(int, int)
+    def __init__(self, number_of_family_members: int, size_of_house: int):
+        """
+        Initiates a new house object.
+
+        :param number_of_family_members: The number of family members in the house.
+        :param size_of_house: The size of the house.
+        """
+        self.number_of_family_members = number_of_family_members
+        self.size_of_house = size_of_house
+
+    def get_house_tax_rate(self) -> int:
+        """
+        Calculates the amount of tax money that should be payed by the house.
+
+        :return: The amount of money that should be payed by the house.
+        """
+        return self.size_of_house * self.number_of_family_members
 
 
 class Neighbourhood:
@@ -110,7 +147,7 @@ class Neighbourhood:
     A neighbourhood in Ackland (part of a City).
     """
 
-    def __init__(self, name, houses=None, number_of_parks=0):
+    def __init__(self, name: str, houses: Optional[Union[House, List[House]]] = None, number_of_parks: int = 0):
         """
         Initiates a new neighbourhood object.
 
@@ -156,30 +193,6 @@ class Neighbourhood:
         Adds a park to the neighbourhood.
         """
         self.number_of_parks += 1
-
-
-class House:
-    """
-    A house in Ackland (part of a neighbourhood).
-    """
-
-    def __init__(self, number_of_family_members, size_of_house):
-        """
-        Initiates a new house object.
-
-        :param number_of_family_members: The number of family members in the house.
-        :param size_of_house: The size of the house.
-        """
-        self.number_of_family_members = number_of_family_members
-        self.size_of_house = size_of_house
-
-    def get_house_tax_rate(self) -> int:
-        """
-        Calculates the amount of tax money that should be payed by the house.
-
-        :return: The amount of money that should be payed by the house.
-        """
-        return self.size_of_house * self.number_of_family_members
 
 
 def main():
