@@ -1,8 +1,6 @@
 import pytest
 from .pycalculator import Calculator
 
-invalid_parameters = [('a', 'b'), (1, 'a'), (1, None), ({'a': 1}, 2)]
-
 
 @pytest.fixture()
 def calculator():
@@ -20,7 +18,10 @@ def calculator_math_methods(request):
     return request.param
 
 
-@pytest.mark.parametrize('x, y', invalid_parameters)
+@pytest.mark.parametrize('x, y', [('a', 'b'),
+                                  (1, 'a'),
+                                  (1, None),
+                                  ({'a': 1}, 2)])
 def test_math_methods_invalid_input_raises(x, y, calculator_math_methods):
     with pytest.raises(TypeError):
         assert calculator_math_methods(x, y)
