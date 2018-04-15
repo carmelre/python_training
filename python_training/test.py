@@ -88,9 +88,9 @@ def test_add_members_to_events(session, member1, member2, member3, event1, event
                           (Organization, organization1())])
 def test_refine_func(table_object, instance, session):
     session.add(instance)
-    session.commit()
     regular_query = session.query(table_object).filter(table_object.id == 1).all()
     get_query = table_object.get().refine(table_object.id == 1).run()
     assert len(get_query) == len(regular_query) == 1
     assert get_query[0].id == regular_query[0].id
     assert isinstance((get_query[0]), table_object) and isinstance((regular_query[0]), table_object)
+

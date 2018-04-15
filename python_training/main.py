@@ -1,6 +1,6 @@
 from python_training.member import add_member, Member
 from python_training.event import add_event, Event
-from python_training.organization import add_organization, Organization
+from python_training.organization import add_organization
 from python_training.config import MEMBERS_INFO, EVENTS_INFO, ORGANIZATIONS_INFO
 from python_training.utils import get_connection, create_tables
 from python_training.config import OPERATIONAL_DB
