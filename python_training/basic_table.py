@@ -9,10 +9,11 @@ class QueryModifier:
 
     def __init__(self, session=None, table_object=None, query=None):
         """
-        Instantiates the object with a basic query upon the database.
+        Instantiates the object with a basic return all query.
 
-        :param session: A session to be used.
+        :param session: A session to be used. If no session is provided a new one is opened.
         :param table_object: The table that the query will be executed upon.
+        :param query: The previous query (if there is so).
         """
         if session is None:
             self.session = get_connection(OPERATIONAL_DB, get_session=True)
@@ -28,7 +29,7 @@ class QueryModifier:
     def refine(self, condition):
         """
         Adds a new condition to the query, and returns a new QueryModifier instance.
-        This way we can support this use case:
+        A new object is returned so queries can branch:
         q1 = Table.get()
         q2 = q1.refine(condition1)
         q3 = q1.refine(condition2)
@@ -52,9 +53,9 @@ class QueryModifier:
 
 class BasicTable:
     @classmethod
-    def get(cls, session=None) -> QueryModifier:
+    def get(cls) -> QueryModifier:
         """
         Creates a QueryModifier that holds a plain query upon the table (seletc *).
         :return: A new QueryModifier instance.
         """
-        return QueryModifier(session, table_object=cls)
+        return QueryModifier(table_object=cls)
