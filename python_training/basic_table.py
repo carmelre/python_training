@@ -26,6 +26,9 @@ class QueryModifier:
         else:
             raise ValueError('No table has been provided')
 
+    def __getattr__(self, item):
+        return getattr(self.query, item)
+
     def refine(self, condition):
         """
         Adds a new condition to the query, and returns a new QueryModifier instance.
