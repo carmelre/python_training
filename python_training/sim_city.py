@@ -4,6 +4,13 @@ BASE_MUNICIPALITY_TAX_RATE = 1000
 
 
 def neighbourhood_verifier(should_exist):
+    """
+    The decorator checks whether the given neighbourhood exist in the class. The wanted result is given as an argument,
+    and a error is raised if it is not fulfilled.
+
+    :param should_exist: Whether the neighbourhood should or should not exist.
+    """
+
     def neighbourhood_verifier_decorator(func):
         def wrapper(self, neighbourhood_name, *args, **kwargs):
             if should_exist:
@@ -13,18 +20,46 @@ def neighbourhood_verifier(should_exist):
                 if neighbourhood_name in self.neighbourhoods:
                     raise KeyError(f'The neighbourhood {neighbourhood_name} already exist in {self.city_name}')
             return func(self, neighbourhood_name, *args, **kwargs)
+
         return wrapper
+
     return neighbourhood_verifier_decorator
 
 
 def type_verifier(*types):
+    """
+    The decorator received a list of types,
+    each type represents the wanted type of the decorated func arg in the same index.
+    If the arguments dont match the wanted types an error is raised.
+
+    :param types: A list of expected types.
+    """
+
     def decor(func):
         def wrapper(self, *args):
-            if any([True for arg in zip(args, types) if not isinstance(arg[0], arg[1])]):
+            if any([True for arg, wanted_type in zip(args, types) if not isinstance(arg, wanted_type)]):
                 raise TypeError('An argument of an invalid type has been passed')
             return func(self, *args)
+
         return wrapper
+
     return decor
+
+
+class BaseAcklandStructure:
+    """
+    A Basic class for Ackland entities.
+    """
+    def _validate_instance_or_list_of_instances(self, given_value, wanted_type):
+        """
+        Make sure that an argument is of a specific type, or a list of instances of this type.
+        :param wanted_type: The expected type
+        :param given_arg: The argument
+        """
+        if isinstance(given_value, list) and any([True for value in given_value if not isinstance(value, wanted_type)]):
+            raise TypeError(f'Invalid argument, each instance of the list should be of type {wanted_type}')
+        if not isinstance(given_value, list) and not isinstance(given_value, wanted_type):
+            raise TypeError(f'Invalid argument, expected type {wanted_type}')
 
 
 class City:
@@ -33,13 +68,13 @@ class City:
     """
 
     @type_verifier(str)
-    def __init__(self, city_name: str):
+    def __init__(self, name: str):
         """
         Initiates a new City object.
 
-        :param city_name: The name of the city you would like to create.
+        :param name: The name of the city you would like to create.
         """
-        self.city_name = city_name
+        self.name = name
         self.base_municipality_tax_rate = BASE_MUNICIPALITY_TAX_RATE
         self.neighbourhoods = {}
 
@@ -95,7 +130,7 @@ class City:
         self.neighbourhoods[neighbourhood_name].add_park()
 
 
-class Ackland:
+class Ackland(BaseAcklandStructure):
     """
     The state Ackland itself.
     """
@@ -104,6 +139,7 @@ class Ackland:
         """
         Initiates the Ackland state object.
         """
+        self._validate_instance_or_list_of_instances(cities, City)
         if isinstance(cities, City):
             cities = [cities]
         self.cities = cities
@@ -142,11 +178,12 @@ class House:
         return self.size_of_house * self.number_of_family_members
 
 
-class Neighbourhood:
+class Neighbourhood(BaseAcklandStructure):
     """
     A neighbourhood in Ackland (part of a City).
     """
 
+    @type_verifier(str)
     def __init__(self, name: str, houses: Optional[Union[House, List[House]]] = None, number_of_parks: int = 0):
         """
         Initiates a new neighbourhood object.
@@ -155,6 +192,7 @@ class Neighbourhood:
         :param number_of_parks: The number of parks in the neighbourhood.
         :param houses: The number of houses in the neighbourhood.
         """
+        self._validate_instance_or_list_of_instances(houses, House)
         self.name = name
         if isinstance(houses, House):
             houses = [houses]
@@ -211,7 +249,7 @@ def main():
     benor_neighbourhood2.build_park()
     print('Benor City tax rate (expected 1120)', benor_city.how_much_money())
     benor_city.ruin_a_neighbourhood('Benor')
-    print('Benor City tax rate after ruining Benor neighbourhood (expected 1175)', benor_city.how_much_money())
+    print('Benor City tax rate after ruining Benor neighbourhood (expected 1275.5)', benor_city.how_much_money())
     ackland = Ackland([shenkler_city, benor_city])
     print('Total tax in ackland: expected 2503.5', ackland.calculate_total_tax_amount())
 
