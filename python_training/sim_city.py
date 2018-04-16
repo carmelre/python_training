@@ -154,7 +154,6 @@ class Neighbourhood():
         :param number_of_parks: The number of parks in the neighbourhood.
         :param houses: The number of houses in the neighbourhood.
         """
-        self._validate_instance_or_list_of_instances(houses, House)
         self.name = name
         if isinstance(houses, House):
             houses = [houses]
