@@ -1,9 +1,11 @@
 from typing import Union, List, Optional
 
 BASE_MUNICIPALITY_TAX_RATE = 1000
+RUIN_NEIGHBORHOOD_TAX_INCREASE = 1.05
+BUILD_NEIGHBORHOOD_TAX_INCREASE = 1.1
 
 
-def neighbourhood_verifier(should_exist):
+def neighbourhood_verifier(should_exist=True):
     """
     The decorator checks whether the given neighbourhood exist in the class. The wanted result is given as an argument,
     and a error is raised if it is not fulfilled.
@@ -26,48 +28,11 @@ def neighbourhood_verifier(should_exist):
     return neighbourhood_verifier_decorator
 
 
-def type_verifier(*types):
-    """
-    The decorator received a list of types,
-    each type represents the wanted type of the decorated func arg in the same index.
-    If the arguments dont match the wanted types an error is raised.
-
-    :param types: A list of expected types.
-    """
-
-    def decor(func):
-        def wrapper(self, *args):
-            if any([True for arg, wanted_type in zip(args, types) if not isinstance(arg, wanted_type)]):
-                raise TypeError('An argument of an invalid type has been passed')
-            return func(self, *args)
-
-        return wrapper
-
-    return decor
-
-
-class BaseAcklandStructure:
-    """
-    A Basic class for Ackland entities.
-    """
-    def _validate_instance_or_list_of_instances(self, given_value, wanted_type):
-        """
-        Make sure that an argument is of a specific type, or a list of instances of this type.
-        :param wanted_type: The expected type
-        :param given_arg: The argument
-        """
-        if isinstance(given_value, list) and any([True for value in given_value if not isinstance(value, wanted_type)]):
-            raise TypeError(f'Invalid argument, each instance of the list should be of type {wanted_type}')
-        if not isinstance(given_value, list) and not isinstance(given_value, wanted_type):
-            raise TypeError(f'Invalid argument, expected type {wanted_type}')
-
-
 class City:
     """
     A city in Ackland.
     """
 
-    @type_verifier(str)
     def __init__(self, name: str):
         """
         Initiates a new City object.
@@ -87,14 +52,14 @@ class City:
         return self.base_municipality_tax_rate + sum([neighbourhood.get_neighbourhood_tax_rate() for neighbourhood
                                                       in self.neighbourhoods.values()])
 
-    @neighbourhood_verifier(should_exist=True)
+    @neighbourhood_verifier()
     def ruin_a_neighbourhood(self, neighbourhood_name):
         """
         Removes a neighbourhood from the city.
 
         :param neighbourhood_name: The name of the neighbourhood that would be removed.
         """
-        self.base_municipality_tax_rate *= 1.05
+        self.base_municipality_tax_rate *= RUIN_NEIGHBORHOOD_TAX_INCREASE
         self.neighbourhoods.pop(neighbourhood_name)
 
     @neighbourhood_verifier(should_exist=False)
@@ -105,11 +70,11 @@ class City:
         :param neighbourhood_name: The name of the neighbourhood.
         :return A neighbourhood object if succeeded, None otherwise.
         """
-        self.base_municipality_tax_rate *= 1.1
+        self.base_municipality_tax_rate *= BUILD_NEIGHBORHOOD_TAX_INCREASE
         self.neighbourhoods[neighbourhood_name] = Neighbourhood(neighbourhood_name, [])
         return self.neighbourhoods[neighbourhood_name]
 
-    @neighbourhood_verifier(should_exist=True)
+    @neighbourhood_verifier()
     def build_a_house(self, neighbourhood_name, number_of_family_members, size_of_house):
         """
         Adds a house to a neighbourhood.
@@ -120,7 +85,7 @@ class City:
         """
         self.neighbourhoods[neighbourhood_name].add_house(number_of_family_members, size_of_house)
 
-    @neighbourhood_verifier(should_exist=True)
+    @neighbourhood_verifier()
     def build_a_park(self, neighbourhood_name):
         """
         Adds a park to a neighbourhood.
@@ -130,7 +95,7 @@ class City:
         self.neighbourhoods[neighbourhood_name].add_park()
 
 
-class Ackland(BaseAcklandStructure):
+class Ackland():
     """
     The state Ackland itself.
     """
@@ -139,7 +104,6 @@ class Ackland(BaseAcklandStructure):
         """
         Initiates the Ackland state object.
         """
-        self._validate_instance_or_list_of_instances(cities, City)
         if isinstance(cities, City):
             cities = [cities]
         self.cities = cities
@@ -158,7 +122,6 @@ class House:
     A house in Ackland (part of a neighbourhood).
     """
 
-    @type_verifier(int, int)
     def __init__(self, number_of_family_members: int, size_of_house: int):
         """
         Initiates a new house object.
@@ -178,12 +141,11 @@ class House:
         return self.size_of_house * self.number_of_family_members
 
 
-class Neighbourhood(BaseAcklandStructure):
+class Neighbourhood():
     """
     A neighbourhood in Ackland (part of a City).
     """
 
-    @type_verifier(str)
     def __init__(self, name: str, houses: Optional[Union[House, List[House]]] = None, number_of_parks: int = 0):
         """
         Initiates a new neighbourhood object.
