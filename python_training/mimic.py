@@ -49,27 +49,32 @@ class MyList:
         """
         if self.list_length == 0:
             raise ValueError('MyList.remove(x): x not in list')
+
         for member in self:
-            if member is self.first_member and member.value == value_to_remove:
-                if self.list_length == 1:
-                    self.first_member = None
-                    self.last_member = None
-                else:
-                    self.first_member = self.first_member.next_member
-                self.list_length -= 1
+            if member.value == value_to_remove:
+                member_to_modify = member
                 break
-
-            if member.next_member.value == value_to_remove:
-                if member.next_member is self.last_member:
-                    self.last_member = member
-                    member.next_member = None
-
-                else:
-                    member.next_member = member.next_member.next_member
-                self.list_length -= 1
+            elif member.next_member.value == value_to_remove:
+                member_to_modify = member
                 break
-            if member == self.last_member:
+            elif member is self.last_member:
                 raise ValueError('MyList.remove(x): x not in list')
+
+        if member_to_modify is self.first_member:
+            if self.list_length == 1:
+                self.first_member = None
+                self.last_member = None
+            else:
+                self.first_member = self.first_member.next_member
+
+        else:
+            if member_to_modify.next_member is self.last_member:
+                self.last_member = member_to_modify
+                member_to_modify.next_member = None
+            else:
+                member_to_modify.next_member = member_to_modify.next_member.next_member
+
+        self.list_length -= 1
 
     def __str__(self)-> str:
         """
