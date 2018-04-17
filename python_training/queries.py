@@ -3,6 +3,7 @@ from python_training.event import Event
 from python_training.organization import Organization
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import aliased
 
 
 def members_that_are_not_at_organization_location(session):
@@ -57,10 +58,17 @@ def people_you_may_know(session):
     :param session: The session that will be used to communicate with the database.
     :return: The result of the query.
     """
-    members = [member for member in session.query(Member).options(joinedload(Member.events)).all()]
-    members_and_knows_people = {member: set() for member in members}
-    for member in members:
-        for event in member.events:
-            members_and_knows_people[member].update(
-                [known_member for known_member in event.members if known_member is not member])
-    return members_and_knows_people
+    member_table1 = aliased(Member)
+    member_table2 = aliased(Member)
+    raw_results = session.query(member_table1, member_table2)\
+        .join(Event, member_table1.events).join(member_table2, Event.members)\
+        .filter(member_table1.id != member_table2.id).all()
+    members_to_friends = {}
+    for result in raw_results:
+        if result[0] in members_to_friends:
+            members_to_friends[result[0]].append(result[1])
+        else:
+            members_to_friends[result[0]] = {result[1]}
+    return members_to_friends
+
+

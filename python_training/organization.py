@@ -14,7 +14,7 @@ class Organization(Base, BasicTable):
     members = relationship('Member', back_populates='organization')
 
     def __repr__(self):
-        return f'Name: {self.name}, Prime Location: {self.prime_location}'
+        return f'Object:{type(self).__name__} Name: {self.name}, Prime Location: {self.prime_location}'
 
 
 def add_organization(session, name, prime_location) -> Organization:

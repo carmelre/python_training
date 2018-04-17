@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from python_training.base import Base
 from python_training.organization import Organization
-from python_training.event__member_enrollment import event_enrollment_association_table
+from python_training.event_member_enrollment import event_enrollment_association_table
 from python_training.basic_table import BasicTable
 
 
@@ -21,8 +21,8 @@ class Member(Base, BasicTable):
                           back_populates='members')
 
     def __repr__(self):
-        return f'First Name: {self.first_name}, Last Name: {self.last_name},' \
-               f' Role: {self.role}, Location: {self.location}'
+        return f'Object:{type(self).__name__} First Name: {self.first_name}, Last Name: {self.last_name},' \
+               f' Role: {self.role}, Location: {self.location}, ID: {self.id}'
 
 
 def add_member(session, first_name, last_name, role, location):
@@ -37,5 +37,5 @@ def add_member(session, first_name, last_name, role, location):
     """
     new_member = Member(first_name=first_name, last_name=last_name, role=role, location=location)
     session.add(new_member)
-    session.commit()
+    #session.commit()
     return new_member

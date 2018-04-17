@@ -1,35 +1,28 @@
-from python_training.utils import get_connection
-from python_training.config import OPERATIONAL_DB
-
 
 class QueryModifier:
     """
     An object that holds and allows modification of an SQLAlchemy query.
     """
 
-    def __init__(self, session=None, table_object=None, query=None):
+    def __init__(self, session, table_object, query=None):
         """
         Instantiates the object with a basic return all query.
 
-        :param session: A session to be used. If no session is provided a new one is opened.
+        :param session: A session to be used.
         :param table_object: The table that the query will be executed upon.
         :param query: The previous query (if there is so).
         """
-        if session is None:
-            self.session = get_connection(OPERATIONAL_DB, get_session=True)
-        else:
-            self.session = session
+        self.table_object = table_object
+        self.session = session
         if query is not None:
             self.query = query
-        elif table_object is not None:
-            self.query = self.session.query(table_object)
         else:
-            raise ValueError('No table has been provided')
+            self.query = self.session.query(table_object)
 
     def __getattr__(self, item):
         return getattr(self.query, item)
 
-    def refine(self, condition):
+    def refine(self, *args, **kwargs):
         """
         Adds a new condition to the query, and returns a new QueryModifier instance.
         A new object is returned so queries can branch:
@@ -40,7 +33,14 @@ class QueryModifier:
         :param condition: An SQLalchemy condition that would be applied to the query.
         :return: A new instance of QueryModifier.
         """
-        return QueryModifier(session=self.session, query=self.query.filter(condition))
+        new_query = self.query
+
+        for arg in args:
+            new_query = new_query.filter(arg)
+        for key, value in kwargs.items():
+            new_query = new_query.filter(getattr(self.table_object, key) == value)
+
+        return QueryModifier(session=self.session, query=new_query, table_object=self.table_object)
 
     def run(self):
         """
@@ -56,9 +56,9 @@ class QueryModifier:
 
 class BasicTable:
     @classmethod
-    def get(cls) -> QueryModifier:
+    def get(cls, session) -> QueryModifier:
         """
         Creates a QueryModifier that holds a plain query upon the table (seletc *).
         :return: A new QueryModifier instance.
         """
-        return QueryModifier(table_object=cls)
+        return QueryModifier(table_object=cls, session=session)
