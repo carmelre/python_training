@@ -1,7 +1,8 @@
+from python_training.base import Base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from python_training.base import Base
-from python_training.basic_table import BasicTable
+
+from python_training.midas.basic_table import BasicTable
 
 
 class Organization(Base, BasicTable):

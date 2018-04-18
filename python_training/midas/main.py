@@ -1,10 +1,11 @@
-from python_training.member import add_member
-from python_training.event import add_event
-from python_training.organization import add_organization
-from python_training.config import MEMBERS_INFO, EVENTS_INFO, ORGANIZATIONS_INFO
 from python_training.base import Base
+from python_training.config import MEMBERS_INFO, EVENTS_INFO, ORGANIZATIONS_INFO
 from python_training.engine import engine
+from python_training.event import add_event
+from python_training.member import add_member
 from python_training.utils import get_session
+
+from python_training.midas.organization import add_organization
 
 
 def insert_info(engine, session):

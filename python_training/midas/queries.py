@@ -1,9 +1,9 @@
-from python_training.member import Member
 from python_training.event import Event
-from python_training.organization import Organization
+from python_training.member import Member
 from sqlalchemy import func
-from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import aliased
+
+from python_training.midas.organization import Organization
 
 
 def members_that_are_not_at_organization_location(session):
