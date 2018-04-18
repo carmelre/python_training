@@ -66,7 +66,7 @@ def people_you_may_know(session):
     members_to_friends = {}
     for result in raw_results:
         if result[0] in members_to_friends:
-            members_to_friends[result[0]].append(result[1])
+            members_to_friends[result[0]].add(result[1])
         else:
             members_to_friends[result[0]] = {result[1]}
     return members_to_friends

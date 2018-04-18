@@ -1,8 +1,10 @@
 from datetime import datetime
+import pkg_resources
 
-OPERATIONAL_DB_FILE_NAME = 'midas.db'
 
-OPERATIONAL_DB = f'sqlite:///{OPERATIONAL_DB_FILE_NAME}'
+DB_FILE = pkg_resources.resource_filename('midas', 'db/midas.db')
+
+OPERATIONAL_DB = f'sqlite:///{DB_FILE}'
 
 MEMBERS_INFO = [{'first_name': 'carmel', 'last_name': 'reubinoff', 'role': 'dev', 'location': 'Tozeret Haaretz'},
                 {'first_name': 'Anya', 'last_name': 'tch', 'role': 'dev', 'location': 'Zikim'},
