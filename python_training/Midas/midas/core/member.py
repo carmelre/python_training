@@ -1,10 +1,10 @@
-from python_training.base import Base
-from python_training.basic_table import BasicTable
-from python_training.event_member_enrollment import event_enrollment_association_table
+from midas.core.base import Base
+from midas.core.basic_table import BasicTable
+from midas.core.event_member_enrollment import event_enrollment_association_table
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from python_training.midas.organization import Organization
+from midas.core.organization import Organization
 
 
 class Member(Base, BasicTable):

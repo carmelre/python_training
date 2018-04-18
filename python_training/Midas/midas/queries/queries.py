@@ -1,9 +1,9 @@
-from python_training.event import Event
-from python_training.member import Member
+from midas.core.event import Event
+from midas.core.member import Member
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
-from python_training.midas.organization import Organization
+from midas.core.organization import Organization
 
 
 def members_that_are_not_at_organization_location(session):

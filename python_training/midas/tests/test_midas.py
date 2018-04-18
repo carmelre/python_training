@@ -1,14 +1,14 @@
 import pytest
-from python_training.base import Base
-from python_training.config import MEMBERS_INFO, ORGANIZATIONS_INFO, EVENTS_INFO
-from python_training.event import add_event, Event
-from python_training.member import add_member, Member
-from python_training.queries import members_that_are_not_at_organization_location, last_event_per_member, \
+from midas.core.base import Base
+from midas.conf.config import MEMBERS_INFO, ORGANIZATIONS_INFO, EVENTS_INFO
+from midas.core.event import add_event, Event
+from midas.core.member import add_member, Member
+from midas.queries.queries import members_that_are_not_at_organization_location, last_event_per_member, \
     number_of_organizations_each_event, number_of_members_in_organization, people_you_may_know
-from python_training.utils import get_session
+from midas.core.utils import get_session
 from sqlalchemy import create_engine
 
-from python_training.midas.organization import add_organization, Organization
+from midas.core.organization import add_organization, Organization
 
 TEST_DB_FILE_NAME = 'midas_test.db'
 
