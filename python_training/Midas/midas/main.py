@@ -1,11 +1,10 @@
+from midas.conf.mock_data import MEMBERS_INFO, EVENTS_INFO, ORGANIZATIONS_INFO
 from midas.core.base import Base
-from midas.conf.config import MEMBERS_INFO, EVENTS_INFO, ORGANIZATIONS_INFO
 from midas.core.engine import engine
 from midas.core.event import add_event
-from midas.core.member import add_member
-from midas.core.utils import get_session
-
+from midas.core.member import add_member, Member
 from midas.core.organization import add_organization
+from midas.utils.utils import get_session
 
 
 def insert_info(engine, session):
@@ -26,8 +25,10 @@ def insert_info(engine, session):
 
 
 def main():
-    session = get_session(engine)
-    insert_info(engine, session)
+    with get_session(engine) as session:
+        #insert_info(engine, session)
+        r = Member.get(session).refine(Member.id > 1, id=4).order_by(Member.id).run()
+        print(r)
 
 
 if __name__ == '__main__':
