@@ -26,7 +26,7 @@ def insert_info(engine, session):
 
 def main():
     with get_session(engine) as session:
-        #insert_info(engine, session)
+        # insert_info(engine, session)
         r = Member.get(session).refine(Member.id > 1, id=4).order_by(Member.id).run()
         print(r)
 

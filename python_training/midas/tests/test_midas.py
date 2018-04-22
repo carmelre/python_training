@@ -57,6 +57,7 @@ def event2():
 def organization1():
     return Organization(**ORGANIZATIONS_INFO[0])
 
+
 @pytest.fixture()
 def organization2():
     return Organization(**ORGANIZATIONS_INFO[1])

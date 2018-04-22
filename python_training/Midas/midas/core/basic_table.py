@@ -1,4 +1,3 @@
-
 class QueryModifier:
     """
     An object that holds and allows modification of an SQLAlchemy query.
@@ -32,7 +31,8 @@ class QueryModifier:
         q2 = q1.refine(condition1)
         q3 = q1.refine(condition2)
 
-        :param condition: An SQLalchemy condition that would be applied to the query.
+        :param args: An SQLalchemy condition (or a list of comditions) that would be applied to the query.
+        :param kwargs: Keyword conditions that would be added to the query as filters.
         :return: A new instance of QueryModifier.
         """
         new_query = self.query

@@ -1,4 +1,3 @@
-
 from midas.core.event_member_enrollment import event_enrollment_association_table
 from midas.core.base import Base
 from sqlalchemy import Column, Integer, String, DateTime

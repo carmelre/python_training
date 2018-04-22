@@ -7,12 +7,12 @@ from sqlalchemy.orm import aliased
 from midas.core.organization import Organization
 
 
-def members_that_are_not_at_organization_location(session):
+def members_that_are_not_at_organization_location(session) -> QueryModifier:
     """
     Creates a query that returns members that are not stationed at their organizations location.
 
     :param session: The session that will be used to communicate with the database.
-    :return: The result of the query.
+    :return: A QueryModifier object that holds the new query.
     """
     return QueryModifier(session,
                          table_object=Member,
@@ -20,12 +20,12 @@ def members_that_are_not_at_organization_location(session):
                          filter(Member.location != Organization.prime_location))
 
 
-def last_event_per_member(session):
+def last_event_per_member(session) -> QueryModifier:
     """
     Creates a query that returns the last event each member took part in.
 
     :param session: The session that will be used to communicate with the database.
-    :return: The result of the query.
+    :return: A QueryModifier object that holds the new query.
     """
     return QueryModifier(session,
                          table_object=Member,
@@ -33,12 +33,12 @@ def last_event_per_member(session):
                          group_by(Member.id))
 
 
-def number_of_members_in_organization(session):
+def number_of_members_in_organization(session) -> QueryModifier:
     """
     Creates a query that counts the number of members in each organization.
 
     :param session: The session that will be used to communicate with the database.
-    :return: The result of the query.
+    :return: A QueryModifier object that holds the new query.
     """
     return QueryModifier(session,
                          table_object=Organization,
@@ -46,12 +46,12 @@ def number_of_members_in_organization(session):
                          .outerjoin(Member, Organization.members).group_by(Organization.id))
 
 
-def number_of_organizations_each_event(session):
+def number_of_organizations_each_event(session) -> QueryModifier:
     """
     Creates a query that counts the number of organizations that took part in each event.
 
     :param session: The session that will be used to communicate with the database.
-    :return: The result of the query.
+    :return: A QueryModifier object that holds the new query.
     """
     return QueryModifier(session, table_object=Event,
                          query=session.query(Event, func.count(Organization.id))
