@@ -44,13 +44,21 @@ class QueryModifier:
 
         return QueryModifier(session=self.session, query=new_query, table_object=self.table_object)
 
-    def run(self):
+    def all(self):
         """
-        Executes the query and returns the result.
+        Executes the query and returns all the results.
 
         :return: The result of the query.
         """
         return self.query.all()
+
+    def one(self):
+        """
+        Executes the query and returns one result.
+
+        :return: The result of the query.
+        """
+        return self.query.one()
 
     def __len__(self):
         return self.query.count()

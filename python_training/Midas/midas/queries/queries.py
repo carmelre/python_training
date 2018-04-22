@@ -1,5 +1,6 @@
 from midas.core.event import Event
 from midas.core.member import Member
+from midas.core.basic_table import QueryModifier
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
@@ -13,8 +14,10 @@ def members_that_are_not_at_organization_location(session):
     :param session: The session that will be used to communicate with the database.
     :return: The result of the query.
     """
-    return session.query(Member).join(Organization). \
-        filter(Member.location != Organization.prime_location).all()
+    return QueryModifier(session,
+                         table_object=Member,
+                         query=session.query(Member).join(Organization).
+                         filter(Member.location != Organization.prime_location))
 
 
 def last_event_per_member(session):
@@ -24,7 +27,10 @@ def last_event_per_member(session):
     :param session: The session that will be used to communicate with the database.
     :return: The result of the query.
     """
-    return session.query(Member, func.max(Event.date)).join(Event, Member.events).group_by(Member.id).all()
+    return QueryModifier(session,
+                         table_object=Member,
+                         query=session.query(Member, func.max(Event.date)).join(Event, Member.events).
+                         group_by(Member.id))
 
 
 def number_of_members_in_organization(session):
@@ -34,8 +40,10 @@ def number_of_members_in_organization(session):
     :param session: The session that will be used to communicate with the database.
     :return: The result of the query.
     """
-    return session.query(Organization, func.count(Member.id)).outerjoin(Member, Organization.members) \
-        .group_by(Organization.id).all()
+    return QueryModifier(session,
+                         table_object=Organization,
+                         query=session.query(Organization, func.count(Member.id))
+                         .outerjoin(Member, Organization.members).group_by(Organization.id))
 
 
 def number_of_organizations_each_event(session):
@@ -45,9 +53,10 @@ def number_of_organizations_each_event(session):
     :param session: The session that will be used to communicate with the database.
     :return: The result of the query.
     """
-    return session.query(Event, func.count(Organization.id)) \
-        .join(Member, Event.members) \
-        .join(Organization, Member.organization).all()
+    return QueryModifier(session, table_object=Event,
+                         query=session.query(Event, func.count(Organization.id))
+                         .join(Member, Event.members)
+                         .join(Organization, Member.organization))
 
 
 def people_you_may_know(session):
@@ -60,8 +69,8 @@ def people_you_may_know(session):
     """
     member_table1 = aliased(Member)
     member_table2 = aliased(Member)
-    raw_results = session.query(member_table1, member_table2)\
-        .join(Event, member_table1.events).join(member_table2, Event.members)\
+    raw_results = session.query(member_table1, member_table2) \
+        .join(Event, member_table1.events).join(member_table2, Event.members) \
         .filter(member_table1.id != member_table2.id).all()
     members_to_friends = {}
     for result in raw_results:
@@ -70,5 +79,3 @@ def people_you_may_know(session):
         else:
             members_to_friends[result[0]] = {result[1]}
     return members_to_friends
-
-
