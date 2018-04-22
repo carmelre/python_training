@@ -51,10 +51,7 @@ class MyList:
             raise ValueError('MyList.remove(x): x not in list')
 
         for member in self:
-            if member.value == value_to_remove:
-                member_to_modify = member
-                break
-            elif member.next_member.value == value_to_remove:
+            if member.value == value_to_remove or member.next_member.value == value_to_remove:
                 member_to_modify = member
                 break
             elif member is self.last_member:
