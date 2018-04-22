@@ -1,14 +1,14 @@
 import pytest
-from midas.core.base import Base
-from midas.conf.config import MEMBERS_INFO, ORGANIZATIONS_INFO, EVENTS_INFO
-from midas.core.event import add_event, Event
-from midas.core.member import add_member, Member
-from midas.queries.queries import members_that_are_not_at_organization_location, last_event_per_member, \
-    number_of_organizations_each_event, number_of_members_in_organization, people_you_may_know
-from midas.core.utils import get_session
 from sqlalchemy import create_engine
 
+from midas.conf.mock_data import MEMBERS_INFO, ORGANIZATIONS_INFO, EVENTS_INFO
+from midas.core.base import Base
+from midas.core.event import add_event, Event
+from midas.core.member import add_member, Member
 from midas.core.organization import add_organization, Organization
+from midas.queries.queries import members_that_are_not_at_organization_location, last_event_per_member, \
+    number_of_organizations_each_event, number_of_members_in_organization, people_you_may_know
+from midas.utils.utils import get_session
 
 TEST_DB_FILE_NAME = 'midas_test.db'
 
@@ -24,9 +24,8 @@ def test_db(tmpdir_factory):
 
 @pytest.fixture()
 def session(test_db):
-    test_session = get_session(test_db)
-    yield test_session
-    test_session.close()
+    with get_session(test_db) as test_session:
+        return test_session
 
 
 @pytest.fixture()
