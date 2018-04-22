@@ -82,11 +82,7 @@ class MyList:
 
         :return: A string representing the list.
         """
-        base_string = '['
-        for member in self:
-            base_string += ' {},'.format(member.value) if member is not self.last_member \
-                else ' {} ]'.format(member.value)
-        return base_string
+        return '[{}]'.format(','.join(str(member.value) for member in self))
 
     def __add__(self, other):
         """
