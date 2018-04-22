@@ -18,7 +18,7 @@ class Event(Base, BasicTable):
                            back_populates='events')
 
     def __repr__(self):
-        return f'Object:{type(self).__name__} Date: {self.date}, Location: {self.location}'
+        return f'<Object:{type(self).__name__} Date: {self.date}, Location: {self.location}>'
 
 
 def add_event(session, date, location):

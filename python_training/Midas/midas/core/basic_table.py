@@ -14,13 +14,15 @@ class QueryModifier:
         """
         self.table_object = table_object
         self.session = session
-        if query is not None:
-            self.query = query
-        else:
-            self.query = self.session.query(table_object)
+        self.query = query if query is not None else self.session.query(table_object)
 
     def __getattr__(self, item):
-        return getattr(self.query, item)
+        self.query = getattr(self.query, item)
+        return self
+
+    def __call__(self, *args):
+        new_query = self.query(*args)
+        return QueryModifier(session=self.session, query=new_query, table_object=self.table_object)
 
     def refine(self, *args, **kwargs):
         """
