@@ -1,11 +1,14 @@
+import math
 
 class Number(int):
     """
     An object that extends the int object and adds functionality over the dividers of a number.
     """
+
     def __init__(self, number):
         """
         Instantiates a number object and prepares the dividers list.
+
         :param number:
         """
         super().__init__()
@@ -17,10 +20,10 @@ class Number(int):
         """
         Appends to the dividers list the rest of the numbers dividers(that are not 1 or the number itself).
         """
-        square_root = self.number**0.5
+        square_root = self.number ** 0.5
         for i in range(2, int(square_root) + 1):
             if self.number % i == 0:
-                self.dividers += [i, int(self.number/i)]
+                self.dividers += [i, int(self.number / i)]
         if square_root.is_integer():
             self.dividers.remove(square_root)
         self.dividers.sort()
@@ -41,6 +44,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
