@@ -10,9 +10,12 @@ class Number(int):
         """
         Appends to the dividers list the rest of the numbers dividers(that are not 1 or the number itself)
         """
-        for i in range(2, int(self.number**0.5) + 1):
+        square_root = self.number**0.5
+        for i in range(2, int(square_root) + 1):
             if self.number % i == 0:
                 self.dividers += [i, int(self.number/i)]
+        if square_root.is_integer():
+            self.dividers.remove(square_root)
         self.dividers.sort()
 
     def __contains__(self, item):
@@ -23,10 +26,10 @@ class Number(int):
 
 
 def main():
-    num = Number(18)
+    num = Number(16)
     print(num.dividers)
     print(num[1])
-    print(num[1:5])
+    print(num[1:4])
 
 
 if __name__ == '__main__':
