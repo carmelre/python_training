@@ -22,12 +22,13 @@ def timer(func):
         rounds = yield runtime_stats['sum_of_run_times'] / runtime_stats['number_of_executions']
 
 
-def super_slow_func(sleep_time):
-    time.sleep(sleep_time)
+def slow_func_with_arguments():
+    def general_func(*args, **kwargs):
+        return sum(args) + sum([value for value in kwargs.values()])
+    return partial(general_func, 1, 2, kwarg1=3, kwarg2=4)
 
 
 if __name__ == '__main__':
-    slow_func_with_arguments = partial(super_slow_func, sleep_time=1)
     g = timer(slow_func_with_arguments)
     print(next(g))
     g.send(2)
