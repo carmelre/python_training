@@ -47,6 +47,5 @@ def get_devices_status(redis_connection):
     :param redis_connection: An instantiated redis.Redis object.
     """
     ips = redis_connection.keys()
-    return [(ip, dt.datetime.fromtimestamp(int(redis_connection.zrange(ip, -1, -1)[0].decode().split(',')[0])))
+    return [(ip.decode(), dt.datetime.fromtimestamp(int(redis_connection.zrange(ip, -1, -1)[0].decode().split(',')[0])))
             for ip in ips if valid_ipv4(ip.decode())]
-
