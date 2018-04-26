@@ -21,7 +21,6 @@ def run_redis(name=DEFAULT_CONTAINER_NAME, port=DEFAULT_PORT):
     container = CLIENT.containers.run(IMAGE_NAME, ports={f'{DEFAULT_PORT}/tcp': port}, detach=True, name=name)
     redis_connection = redis.Redis(host='localhost', port=f'{port}')
     number_of_attempts = 0
-    global MAX_CONNECTION_ATTEMPTS
     while redis_connection.info()['loading'] != 0 and number_of_attempts != MAX_CONNECTION_ATTEMPTS:
         time.sleep(1)
         number_of_attempts += 1
