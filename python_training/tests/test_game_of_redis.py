@@ -17,6 +17,9 @@ def redis_test_db():
 
 def test_index_data(redis_test_db):
     implement_me.index(MOCK_DATA_SET, redis_test_db)
+    assert len(redis_test_db.keys()) == 2
+    assert len(redis_test_db.zrange(MOCK_DATA_BASE[0][0], 0, -1)) == 3
+    assert len(redis_test_db.zrange(MOCK_DATA_BASE[-1][0], 0, -1)) == 1
 
 
 def test_get_device_histogram(redis_test_db):
