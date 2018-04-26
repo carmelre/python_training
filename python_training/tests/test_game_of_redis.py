@@ -21,8 +21,9 @@ def test_index_data(redis_test_db):
 
 def test_get_device_histogram(redis_test_db):
     result = implement_me.get_device_histogram('1.1.1.1', 2, redis_test_db)
-    manual_results = [{'timestamp': mock_data[2], 'protocol': mock_data[1]} for mock_data in MOCK_DATA_BASE[1:3]]
-    assert all([manual_result in result for manual_result in manual_results])
+    manual_result = [{'timestamp': mock_data[2], 'protocol': mock_data[1]} for mock_data in MOCK_DATA_BASE[1:3]]
+    manual_result.reverse()
+    assert result == manual_result
 
 
 def test_get_device_status(redis_test_db):
