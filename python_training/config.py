@@ -1,0 +1,1 @@
+ELASTICSEARCH_INSTANCE = 'localhost:9200'
