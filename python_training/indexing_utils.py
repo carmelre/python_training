@@ -1,6 +1,4 @@
 from python_training.document_gen import document_gen
-import json
-import hashlib
 from elasticsearch import helpers
 
 
