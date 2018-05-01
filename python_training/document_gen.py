@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+import json
+import hashlib
 
 
 def convert_timestamp(timestamp: float) -> str:
@@ -35,14 +37,14 @@ def create_metadata(path: str, file_name: str) -> dict:
     """
     raw_meta = os.stat(f'{path}/{file_name}')
     return {'size': raw_meta.st_size,
-            'mode': raw_meta.st_mode,
-            'uid': raw_meta.st_uid,
-            'gid': raw_meta.st_gid,
-            'path': path,
-            'file_name': file_name,
-            'access time': convert_timestamp(raw_meta.st_atime),
-            'modification time': convert_timestamp(raw_meta.st_mtime),
-            'change time': convert_timestamp(raw_meta.st_ctime)}
+                   'mode': raw_meta.st_mode,
+                   'uid': raw_meta.st_uid,
+                   'gid': raw_meta.st_gid,
+                   'path': path,
+                   'file_name': file_name,
+                   'access time': convert_timestamp(raw_meta.st_atime),
+                   'modification time': convert_timestamp(raw_meta.st_mtime),
+                   'change time': convert_timestamp(raw_meta.st_ctime)}
 
 
 def directory_validator(directory: str):
@@ -57,14 +59,19 @@ def directory_validator(directory: str):
         raise ValueError('The path does not exist')
 
 
-def document_gen(directory: str) -> dict:
+def document_gen(directory: str, doc_type: str) -> dict:
     """
     Generates a dictionary for each file in the directory, representing a single elasticsearch document.
     The dictionary contains the metadata that we parse and index.
 
     :param directory: The directory which files would be processed.
+    :param doc_type: The elasticseatch doctype that would be filled in the _type field.
+    At the moment only one doctype is supported per directory.
     :return: a dictionary containing formatted metadata data of each file in the directory.
     """
     directory_validator(directory)
     for path, file_name in filename_gen(directory):
-        yield create_metadata(path, file_name)
+        es_document = create_metadata(path, file_name)
+        es_document['_id'] = hashlib.md5(json.dumps(es_document).encode()).hexdigest()
+        es_document['_type'] = doc_type
+        yield es_document

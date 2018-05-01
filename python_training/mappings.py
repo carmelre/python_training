@@ -10,7 +10,7 @@ FILE_METADATA_DEFAULT_MAPPING = {
         'file_name': {'fields': {'keyword': {'type': 'keyword'}},
                       'norms': False,
                       'type': 'text'},
-        'access time': {'type': 'date', 'format': 'yyyy-mm-dd hh-mm-ss'},
+        'access time': {'type': 'date', 'format': 'yyyy-MM-dd HH:mm:ss'},
         'modification time': {'type': 'date', 'format': 'yyyy-MM-dd HH:mm:ss'},
         'change time': {'type': 'date', 'format': 'yyyy-MM-dd HH:mm:ss'}
     }
