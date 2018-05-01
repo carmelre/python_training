@@ -4,7 +4,7 @@ import time
 import contextlib
 import sys
 import os
-from python_training.config import DEFAULT_MASTER_PORT, DEFAULT_CONTAINER_NAME,\
+from python_training.config import DEFAULT_MASTER_PORT, DEFAULT_CONTAINER_NAME, \
     DEFAULT_DATA_PORT, IMAGE_NAME, ES_SERVER
 
 CLIENT = docker.from_env()
@@ -42,12 +42,12 @@ def run_elasticsearch(name=DEFAULT_CONTAINER_NAME, data_port=DEFAULT_DATA_PORT, 
     elasticsearch_connection = Elasticsearch(f'{ES_SERVER}:{data_port}')
     number_of_attempts = 0
     while number_of_attempts != MAX_CONNECTION_ATTEMPTS:
-            with no_stderr():
-                elasticsearch_response = elasticsearch_connection.ping()
-            if elasticsearch_response is True:
-                return elasticsearch_connection, container
-            time.sleep(CONNECTION_ATTEMPT_INTERVAL)
-            number_of_attempts += 1
+        with no_stderr():
+            elasticsearch_response = elasticsearch_connection.ping()
+        if elasticsearch_response is True:
+            return elasticsearch_connection, container
+        time.sleep(CONNECTION_ATTEMPT_INTERVAL)
+        number_of_attempts += 1
     raise ConnectionError('Max number of attempts to connect to the elasticsearch service has been reached')
 
 

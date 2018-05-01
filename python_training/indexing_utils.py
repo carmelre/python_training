@@ -24,9 +24,3 @@ def index_directory(directory, es_client, index, doc_type, mappings=None):
     result = helpers.bulk(es_client, document_gen(directory, doc_type=doc_type), index=index)
     es_client.indices.refresh(index)
     return result
-
-
-
-
-
-

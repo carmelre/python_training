@@ -37,14 +37,14 @@ def create_metadata(path: str, file_name: str) -> dict:
     """
     raw_meta = os.stat(f'{path}/{file_name}')
     return {'size': raw_meta.st_size,
-                   'mode': raw_meta.st_mode,
-                   'uid': raw_meta.st_uid,
-                   'gid': raw_meta.st_gid,
-                   'path': path,
-                   'file_name': file_name,
-                   'access time': convert_timestamp(raw_meta.st_atime),
-                   'modification time': convert_timestamp(raw_meta.st_mtime),
-                   'change time': convert_timestamp(raw_meta.st_ctime)}
+            'mode': raw_meta.st_mode,
+            'uid': raw_meta.st_uid,
+            'gid': raw_meta.st_gid,
+            'path': path,
+            'file_name': file_name,
+            'access time': convert_timestamp(raw_meta.st_atime),
+            'modification time': convert_timestamp(raw_meta.st_mtime),
+            'change time': convert_timestamp(raw_meta.st_ctime)}
 
 
 def directory_validator(directory: str):
