@@ -13,7 +13,7 @@ def index_directory(directory, es_client, index, doc_type, mappings=None):
     :param directory: The directory which files would be processed.
     :param es_client: A connection object to the target Elasticsearch.
     :param index: The target index to which we will index the documents.
-    :param doctype: The doctype of the index and documents.
+    :param doc_type: The doctype of the index and documents.
     :param mappings: The mappings of the index, necessary only if the index doesnt exist.
     """
     if not es_client.indices.exists(index):

@@ -30,8 +30,9 @@ def run_elasticsearch(name=DEFAULT_CONTAINER_NAME, data_port=DEFAULT_DATA_PORT, 
     """
     Runs an elasticsearch container and returns a connection to the DB.
     :param: name: The name that would be given to the container.
-    :param: port: The port on localhost that would be bound to the default redis port within the container.
-    :return: A redis connection.
+    :param: data_port: The port would be bound to the default es data port within the container.
+    :param: master_port: The port would be bound to the default es master port within the container.
+    :return: An Elasticseatch client, and the es container object.
     """
     container = CLIENT.containers.run(IMAGE_NAME,
                                       ports={f'{DEFAULT_DATA_PORT}/tcp': data_port,
@@ -53,7 +54,7 @@ def run_elasticsearch(name=DEFAULT_CONTAINER_NAME, data_port=DEFAULT_DATA_PORT, 
 
 def remove_and_stop_elasticsearch(container):
     """
-    Stops and removes the redis container.
+    Stops and removes the Elasticsearch container.
     """
     container.stop()
     container.remove()
