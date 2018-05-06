@@ -1,7 +1,7 @@
 import os
-from datetime import datetime
 import json
 import hashlib
+from datetime import datetime
 
 
 def convert_timestamp(timestamp: float) -> str:
@@ -14,7 +14,7 @@ def convert_timestamp(timestamp: float) -> str:
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 
-def filename_gen(directory: str) -> tuple:
+def collect_filenames(directory: str) -> tuple:
     """
     Generates the path and filename of all the files in a given directory (recursively).
 
@@ -47,7 +47,7 @@ def create_metadata(path: str, file_name: str) -> dict:
             'change time': convert_timestamp(raw_meta.st_ctime)}
 
 
-def directory_validator(directory: str):
+def validate_directory(directory: str):
     """
     Validates that the given path is absilute (we dont want relative paths in our DB), and that is exists.
 
@@ -59,7 +59,7 @@ def directory_validator(directory: str):
         raise ValueError('The path does not exist')
 
 
-def document_gen(directory: str, doc_type: str) -> dict:
+def generate_es_metadata_docs(directory: str, doc_type: str) -> dict:
     """
     Generates a dictionary for each file in the directory, representing a single elasticsearch document.
     The dictionary contains the metadata that we parse and index.
@@ -69,8 +69,8 @@ def document_gen(directory: str, doc_type: str) -> dict:
     At the moment only one doctype is supported per directory.
     :return: a dictionary containing formatted metadata data of each file in the directory.
     """
-    directory_validator(directory)
-    for path, file_name in filename_gen(directory):
+    validate_directory(directory)
+    for path, file_name in collect_filenames(directory):
         es_document = create_metadata(path, file_name)
         es_document['_id'] = hashlib.md5(json.dumps(es_document).encode()).hexdigest()
         es_document['_type'] = doc_type

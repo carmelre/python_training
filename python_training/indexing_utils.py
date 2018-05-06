@@ -1,8 +1,9 @@
-from python_training.document_gen import document_gen
 from elasticsearch import helpers
+from python_training.document_gen import generate_es_metadata_docs
+from python_training.mappings import FILE_METADATA_DEFAULT_MAPPING
 
 
-def index_directory(directory, es_client, index, doc_type, mappings=None):
+def index_directory(directory, es_client, index, doc_type, mappings=FILE_METADATA_DEFAULT_MAPPING):
     """
     Indexes the metadata of the files within the given directory.
     If the given index doesnt exist, it would be created.
@@ -19,6 +20,6 @@ def index_directory(directory, es_client, index, doc_type, mappings=None):
             raise ValueError('No mappings were given, the index cannot be created')
         es_client.indices.create(index)
         es_client.indices.put_mapping(doc_type, mappings, index=index)
-    result = helpers.bulk(es_client, document_gen(directory, doc_type=doc_type), index=index)
+    result = helpers.bulk(es_client, generate_es_metadata_docs(directory, doc_type=doc_type), index=index)
     es_client.indices.refresh(index)
     return result
