@@ -1,15 +1,15 @@
-import docker
-from elasticsearch import Elasticsearch
-import time
-import contextlib
 import sys
 import os
+import time
+import contextlib
+import docker
+from elasticsearch import Elasticsearch
 from python_training.config import DEFAULT_MASTER_PORT, DEFAULT_CONTAINER_NAME, \
     DEFAULT_DATA_PORT, IMAGE_NAME, ES_SERVER
 
 CLIENT = docker.from_env()
 MAX_CONNECTION_ATTEMPTS = 10
-CONNECTION_ATTEMPT_INTERVAL = 2
+CONNECTION_ATTEMPT_INTERVAL = 3
 
 
 @contextlib.contextmanager
@@ -35,8 +35,8 @@ def run_elasticsearch(name=DEFAULT_CONTAINER_NAME, data_port=DEFAULT_DATA_PORT, 
     :return: An Elasticseatch client, and the es container object.
     """
     container = CLIENT.containers.run(IMAGE_NAME,
-                                      ports={f'{DEFAULT_DATA_PORT}/tcp': data_port,
-                                             f'{DEFAULT_MASTER_PORT}/tcp': master_port},
+                                      ports={'9200/tcp': data_port,
+                                             '9300/tcp': master_port},
                                       detach=True,
                                       name=name,
                                       environment=['discovery.type=single-node'])
