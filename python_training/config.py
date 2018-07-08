@@ -1,0 +1,5 @@
+DEFAULT_DATA_PORT = 9202
+DEFAULT_MASTER_PORT = 9303
+DEFAULT_CONTAINER_NAME = 'bing-elasticsearch'
+IMAGE_NAME = 'elasticsearch'
+ES_SERVER = 'localhost'
